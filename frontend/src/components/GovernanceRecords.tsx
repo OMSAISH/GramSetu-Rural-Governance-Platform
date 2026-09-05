@@ -72,9 +72,9 @@ export const GovernanceRecords: React.FC = () => {
             </span>
           </div>
           <div className="flex items-center space-x-3 text-[11px] text-slate-300">
-            <span>{language === 'mr' ? 'गाव: शिवणे | तालुका: हवेली | जि. पुणे' : 'GP: Shivane | Block: Haveli | Dist: Pune'}</span>
+            <span>{language === 'mr' ? 'गाव: कोपरगाव | तालुका: कोपरगाव | जि. अहिल्यानगर' : 'GP: Kopargaon | Block: Kopargaon | Dist: Ahilyanagar'}</span>
             <span className="bg-emerald-800 text-emerald-100 font-mono px-2 py-0.5 rounded text-[10px] font-bold">
-              LGD: 182940
+              LGD: 178450
             </span>
           </div>
         </div>
@@ -385,8 +385,8 @@ export const GovernanceRecords: React.FC = () => {
             {/* National Emblem & Header */}
             <div className="text-center border-b-2 border-black pb-4 space-y-1">
               <div className="text-xs font-bold uppercase tracking-wider">महाराष्ट्र शासन | ग्रामविकास विभाग</div>
-              <h1 className="text-xl font-black uppercase">ग्रामपंचायत कार्यालय, शिवणे</h1>
-              <div className="text-xs font-semibold">तालुका: हवेली, जिल्हा: पुणे | पिनकोड: ४११०४२ | LGD कोड: १८२९४०</div>
+              <h1 className="text-xl font-black uppercase">ग्रामपंचायत कार्यालय, कोपरगाव</h1>
+              <div className="text-xs font-semibold">तालुका: कोपरगाव, जिल्हा: अहिल्यानगर | पिनकोड: ४२३६०१ | LGD कोड: १७८४५०</div>
               <div className="inline-block border border-black px-4 py-1 text-xs font-bold uppercase mt-2">
                 सार्वजनिक शासन निर्णय / ग्रामसभा ठराव अधिकृत प्रत
               </div>
@@ -396,7 +396,7 @@ export const GovernanceRecords: React.FC = () => {
             <div className="flex justify-between text-xs font-semibold py-2 border-b border-black">
               <div>
                 <span>दस्तऐवज संदर्भ क्र: </span>
-                <span className="font-mono font-bold">GP-SHIVANE/{selectedRecordForPrint.category.toUpperCase()}/2026</span>
+                <span className="font-mono font-bold">GP-KOPARGAON/{selectedRecordForPrint.category.toUpperCase()}/2026</span>
               </div>
               <div>
                 <span>दिनांक: </span>
@@ -428,10 +428,10 @@ export const GovernanceRecords: React.FC = () => {
             <div className="pt-12 grid grid-cols-2 gap-8 text-center text-xs font-bold">
               <div>
                 <div className="w-24 h-24 rounded-full border-2 border-dashed border-red-700 text-red-700 flex items-center justify-center mx-auto text-[10px] uppercase font-black rotate-[-12deg] p-1">
-                  ग्रामपंचायत शिवणे<br />सिक्का व मोहर<br />★ PUNE ★
+                  ग्रामपंचायत कोपरगाव<br />सिक्का व मोहर<br />★ AHILYANAGAR ★
                 </div>
                 <div className="mt-2 text-slate-800">ग्रामसेवक / ग्रामविकास अधिकारी</div>
-                <div className="text-[10px] text-slate-600 font-normal">ग्रामपंचायत शिवणे, ता. हवेली</div>
+                <div className="text-[10px] text-slate-600 font-normal">ग्रामपंचायत कोपरगाव, ता. कोपरगाव</div>
               </div>
 
               <div className="flex flex-col justify-end">
@@ -439,7 +439,7 @@ export const GovernanceRecords: React.FC = () => {
                   श्रीमती सुमित्रा गायकवाड
                 </div>
                 <div className="text-slate-800">सरपंच</div>
-                <div className="text-[10px] text-slate-600 font-normal">ग्रामपंचायत शिवणे, ता. हवेली (पुणे)</div>
+                <div className="text-[10px] text-slate-600 font-normal">ग्रामपंचायत कोपरगाव, ता. कोपरगाव (जि. अहिल्यानगर)</div>
               </div>
             </div>
 

@@ -8,22 +8,22 @@ export const GovNoticeTicker: React.FC = () => {
 
   const notices = {
     mr: [
-      "📢 महत्त्वाची सूचना: विशेष ग्रामसभा बैठकीत Jal Jeevan Mission नळ जोडणी व विकास आराखड्यास सर्वसंमतीने मंजुरी.",
-      "💧 वॉर्ड क्र. २ व ३ मध्ये नवीन भूमिगत गटार व सिमेंट रस्ता बांधकाम प्रगतीपथावर आहे.",
-      "🏛️ प्रधानमंत्री आवास योजना (PMAY-G) नवीन पात्र लाभार्थी यादी ग्रामपंचायत कार्यालयाच्या फलकावर प्रसिद्ध.",
-      "⚖️ नागरिक तक्रार निवारण हमी: पिण्याचे पाणी (३ दिवस), वीज/पथदिवे (४ दिवस) मुदतीत निवारण बंधनकारक."
+      "📢 महत्त्वाची सूचना: ग्रामपंचायत कोपरगाव विशेष ग्रामसभेत जलजीवन मिशन नळ जोडणी व विकास आराखड्यास सर्वसंमतीने मंजुरी.",
+      "💧 कोपरगाव ग्रामीण परिसर व वॉर्ड क्र. २ मध्ये नवीन भूमिगत गटार व सिमेंट रस्ता बांधकाम प्रगतीपथावर आहे.",
+      "🏛️ प्रधानमंत्री आवास योजना (PMAY-G) नवीन पात्र लाभार्थी यादी ग्रामपंचायत कोपरगाव फलकावर प्रसिद्ध.",
+      "⚖️ कोपरगाव नागरिक तक्रार निवारण हमी: पिण्याचे पाणी (३ दिवस), वीज/पथदिवे (४ दिवस) मुदतीत निवारण बंधनकारक."
     ],
     hi: [
-      "📢 महत्वपूर्ण सूचना: विशेष ग्राम सभा बैठक में जल जीवन मिशन नल कनेक्शन व वार्षिक विकास बजट को सर्वसम्मति से मंजूरी।",
-      "💧 वार्ड नं 2 और 3 में नई भूमिगत नाली एवं सीसी सड़क निर्माण कार्य प्रगति पर है।",
-      "🏛️ प्रधानमंत्री आवास योजना (PMAY-G) नवीन पात्र लाभार्थी सूची ग्राम पंचायत सूचना पटल पर उपलब्ध।",
-      "⚖️ नागरिक शिकायत निवारण गारंटी: पेयजल (3 दिन), बिजली (4 दिन) समयसीमा में समाधान अनिवार्य।"
+      "📢 महत्वपूर्ण सूचना: ग्राम पंचायत कोपरगांव विशेष ग्राम सभा में जल जीवन मिशन नल कनेक्शन व विकास बजट को मंजूरी।",
+      "💧 कोपरगांव ग्रामीण क्षेत्र व वार्ड नं 2 में नई भूमिगत नाली एवं सीसी सड़क निर्माण कार्य प्रगति पर है।",
+      "🏛️ प्रधानमंत्री आवास योजना (PMAY-G) नवीन पात्र लाभार्थी सूची ग्राम पंचायत कोपरगांव सूचना पटल पर उपलब्ध।",
+      "⚖️ कोपरगांव नागरिक शिकायत निवारण गारंटी: पेयजल (3 दिन), बिजली (4 दिन) समयसीमा में समाधान अनिवार्य।"
     ],
     en: [
-      "📢 Official Public Notice: Special Gram Sabha unanimously approved Jal Jeevan Mission tap connectivity and Monsoon Development Plan.",
-      "💧 Construction of CC Road and covered stormwater drainage in Ward 2 & 3 is currently 65% complete.",
-      "🏛️ Pradhan Mantri Awas Yojana (PMAY-G) newly verified beneficiary entitlement list published on Panchayat notice board.",
-      "⚖️ Guaranteed Citizen Service SLA: Drinking Water (3 days), Streetlights (4 days) mandatory time-bound redressal."
+      "📢 Official Notice: Gram Panchayat Kopargaon Gram Sabha unanimously approved Jal Jeevan Mission tap connectivity and Development Plan.",
+      "💧 Construction of CC Road and drainage in Kopargaon Ward 2 & 3 is currently 65% complete.",
+      "🏛️ Pradhan Mantri Awas Yojana (PMAY-G) verified beneficiary list published on Kopargaon Panchayat notice board.",
+      "⚖️ Kopargaon Guaranteed Citizen SLA: Drinking Water (3 days), Streetlights (4 days) mandatory redressal."
     ]
   };
 

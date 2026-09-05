@@ -156,7 +156,11 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
         <div className="bg-white rounded-xl p-5 sm:p-7 shadow-sm border border-slate-300 space-y-5">
           {/* Government Jurisdiction Header */}
           <div className="bg-slate-100 p-3 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 flex flex-wrap items-center justify-between gap-2">
-            <span>जिल्हा: पुणे | तालुका: हवेली | ग्रामपंचायत: शिवाजीनगर</span>
+            <span>
+              {language === 'mr'
+                ? 'जिल्हा: अहिल्यानगर (अहमदनगर) | तालुका: कोपरगाव | ग्रामपंचायत: कोपरगाव ग्रामीण'
+                : 'District: Ahilyanagar (Ahmednagar) | Taluka: Kopargaon | Gram Panchayat: Kopargaon Rural'}
+            </span>
             <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded uppercase font-extrabold">
               SLA हमी कक्ष
             </span>

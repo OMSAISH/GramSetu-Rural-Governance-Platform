@@ -121,7 +121,7 @@ export const SchemeEligibility: React.FC = () => {
           <div class="header">
             <div class="emblem-title">भारत सरकार | GOVERNMENT OF MAHARASHTRA | ग्रामपंचायत प्रशासन</div>
             <div class="main-title">कल्याणकारी योजना अधिकृत अर्ज नमुना (FORM NO. 1)</div>
-            <div class="sub-title">Scheme: ${schemeName} | Gram Panchayat: Shivajinagar (MH-27042)</div>
+            <div class="sub-title">Scheme: ${schemeName} | Gram Panchayat: Kopargaon, Dist: Ahilyanagar (MH-KPG-423601)</div>
           </div>
           <div class="badge-box">
             <div><b>Application Ref ID:</b> GS-APP-${schemeId}-2026-${Math.floor(10000 + Math.random() * 90000)}</div>

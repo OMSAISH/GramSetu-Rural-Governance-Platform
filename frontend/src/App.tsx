@@ -170,7 +170,7 @@ const MainAppContent: React.FC = () => {
             <div className="space-y-2 text-[11px]">
               <div className="bg-[#061826] p-2.5 rounded-lg border border-blue-950 flex items-center justify-between">
                 <div>
-                  <div className="font-bold text-white">{language === 'mr' ? 'ग्रामपंचायत मदत कक्ष' : 'Panchayat Toll-Free'}</div>
+                  <div className="font-bold text-white">{language === 'mr' ? 'ग्रामपंचायत कोपरगाव मदत कक्ष' : 'Kopargaon Panchayat Helpline'}</div>
                   <div className="text-[10px] text-slate-400">नागरिक हक्क सनद निवारण</div>
                 </div>
                 <div className="text-amber-400 font-mono font-black text-xs">1800-120-2255</div>
@@ -204,11 +204,11 @@ const MainAppContent: React.FC = () => {
             <div>
               <p>
                 {language === 'mr'
-                  ? 'ग्रामसेतू - ग्रामपंचायत डिजिटल सेवा प्रणाली. माहितीचा अधिकार कायदा कलम ४(१)(ख) व लोकसेवा हक्क अधिनियमांतर्गत सार्वजनिक प्रकटीकरण.'
-                  : 'GramSetu - Digital Gram Panchayat Governance Platform. Publicly disclosed under RTI Act Section 4(1)(b).'}
+                  ? 'ग्रामसेतू - ग्रामपंचायत कोपरगाव डिजिटल सेवा प्रणाली. माहितीचा अधिकार कायदा कलम ४(१)(ख) व लोकसेवा हक्क अधिनियमांतर्गत सार्वजनिक प्रकटीकरण.'
+                  : 'GramSetu - Digital Gram Panchayat Kopargaon Governance Platform. Publicly disclosed under RTI Act Section 4(1)(b).'}
               </p>
               <p className="text-[10px] text-slate-500 mt-0.5">
-                Content Owned, Updated and Maintained by Gram Panchayat Administration, Shivane (Pune).
+                Content Owned, Updated and Maintained by Gram Panchayat Administration, Kopargaon (Ahilyanagar).
               </p>
             </div>
 

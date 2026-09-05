@@ -148,12 +148,12 @@ export const OfficialDashboard: React.FC = () => {
             <Shield className="w-3.5 h-3.5 text-[#FF9933]" />
             <span className="font-semibold uppercase tracking-wider">
               {language === 'mr' 
-                ? 'शासकीय प्रशासकीय नियंत्रण कक्ष | ग्रामपंचायत शिवणे' 
-                : 'Administrative War Room | Gram Panchayat Shivane'}
+                ? 'शासकीय प्रशासकीय नियंत्रण कक्ष | ग्रामपंचायत कोपरगाव' 
+                : 'Administrative War Room | Gram Panchayat Kopargaon'}
             </span>
           </div>
           <div className="flex items-center space-x-3 text-[11px] text-slate-300">
-            <span>{language === 'mr' ? 'तालुका: हवेली | जिल्हा: पुणे' : 'Block: Haveli | District: Pune'}</span>
+            <span>{language === 'mr' ? 'तालुका: कोपरगाव | जिल्हा: अहिल्यानगर' : 'Block: Kopargaon | District: Ahilyanagar'}</span>
             <span className="bg-blue-800 text-blue-100 font-mono px-2 py-0.5 rounded text-[10px] font-bold">
               OFFICER LOGIN: 9822001122
             </span>
@@ -183,7 +183,7 @@ export const OfficialDashboard: React.FC = () => {
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-300 mt-2">
               <span><strong>सरपंच:</strong> श्रीमती सुमित्रा गायकवाड</span>
               <span>•</span>
-              <span><strong>ग्रामसेवक:</strong> श्री. आनंदराव शिंदे (GS-402)</span>
+              <span><strong>ग्रामसेवक:</strong> श्री. आनंदराव शिंदे (GS-KPG-104)</span>
               <span>•</span>
               <span><strong>सहाय्यक अभियंता:</strong> श्री. विजय देशमुख</span>
             </div>

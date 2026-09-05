@@ -238,7 +238,7 @@ async def seed_data():
         print("Seeding governance records...")
         governance_records = [
             GovernanceRecord(
-                panchayat_id="GP-MAHA-042",
+                panchayat_id="GP-KPG-01",
                 title="Special Gram Sabha Meeting: Annual Development Plan Approval",
                 title_hi="विशेष ग्राम सभा बैठक: वार्षिक विकास कार्य योजना एवं बजट अनुमोदन",
                 title_mr="विशेष ग्रामसभा बैठक: वार्षिक विकास आराखडा व अंदाजपत्रक मंजुरी",
@@ -251,7 +251,7 @@ async def seed_data():
                 amount=None
             ),
             GovernanceRecord(
-                panchayat_id="GP-MAHA-042",
+                panchayat_id="GP-KPG-01",
                 title="Quarterly Gram Sabha: Budget Review & Audit Presentation",
                 title_hi="त्रैमासिक ग्राम सभा: बजट समीक्षा एवं सार्वजनिक अंकेक्षण (ऑडिट) प्रस्तुति",
                 title_mr="त्रैमासिक ग्रामसभा: खर्च आढावा आणि सामाजिक लेखापरीक्षण (ऑडिट) सादरीकरण",
@@ -264,7 +264,7 @@ async def seed_data():
                 amount=None
             ),
             GovernanceRecord(
-                panchayat_id="GP-MAHA-042",
+                panchayat_id="GP-KPG-01",
                 title="Concrete Pavement & Stormwater Drain Construction (Ward 2 to ZP School)",
                 title_hi="वार्ड नंबर 2 से प्राथमिक विद्यालय तक कंक्रीट सड़क व जल निकासी नाली निर्माण",
                 title_mr="वॉर्ड क्र. 2 ते जि.प. प्राथमिक शाळा सिमेंट काँक्रीट रस्ता व बंदिस्त गटार बांधकाम",
@@ -277,7 +277,7 @@ async def seed_data():
                 amount=480000.0
             ),
             GovernanceRecord(
-                panchayat_id="GP-MAHA-042",
+                panchayat_id="GP-KPG-01",
                 title="Installation of 24 High-Mast Solar Streetlights in Harijan Wasti & Main Chowk",
                 title_hi="हरिजन बस्ती एवं मुख्य चौक में 24 हाई-मास्ट सोलर स्ट्रीट लाइट स्थापना",
                 title_mr="हरिजन वस्ती व मुख्य बाजारपेठ चौकात 24 सौर पथदिवे (सोलर लाईट) बसविणे",
@@ -290,7 +290,7 @@ async def seed_data():
                 amount=275000.0
             ),
             GovernanceRecord(
-                panchayat_id="GP-MAHA-042",
+                panchayat_id="GP-KPG-01",
                 title="15th Finance Commission Untied Grant Allocation (FY 2025-26)",
                 title_hi="15वां वित्त आयोग अबद्ध अनुदान आवंटन (वित्तीय वर्ष 2025-26)",
                 title_mr="15 वा वित्त आयोग अबद्ध विकास निधी वाटप (सन 2025-26)",
@@ -303,7 +303,7 @@ async def seed_data():
                 amount=1850000.0
             ),
             GovernanceRecord(
-                panchayat_id="GP-MAHA-042",
+                panchayat_id="GP-KPG-01",
                 title="MGNREGA Community Farm Pond (Shet-Tale) Excavation Work",
                 title_hi="मनरेगा सामुदायिक खेत तालाब (खेत तलाई) खुदाई निर्माण कार्य",
                 title_mr="मनरेगा सामुदायिक शेततळे खोदकाम व जलसंधारण प्रकल्प",

@@ -30,7 +30,7 @@ export const GovHeader: React.FC<GovHeaderProps> = ({ fontSizeLevel, setFontSize
               <span>भारत सरकार | Government of India</span>
             </span>
             <span className="pl-3 text-slate-300 hidden md:inline">
-              महाराष्ट्र शासन | Government of Maharashtra
+              महाराष्ट्र शासन | ग्रामपंचायत कोपरगाव (अहिल्यानगर)
             </span>
           </div>
 
@@ -126,7 +126,7 @@ export const GovHeader: React.FC<GovHeaderProps> = ({ fontSizeLevel, setFontSize
               </span>
             </div>
             <div className="text-xs font-semibold text-slate-500">
-              ग्रामपंचायत प्रशासन व नागरिक कल्याण ई-सेवा प्रणाली (Shivajinagar GP, Pune)
+              ग्रामपंचायत प्रशासन व नागरिक कल्याण ई-सेवा प्रणाली (ग्रामपंचायत कोपरगाव | ता. कोपरगाव, जि. अहिल्यानगर)
             </div>
           </div>
         </div>

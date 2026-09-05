@@ -135,7 +135,7 @@ const FALLBACK_SCHEMES = [
 const FALLBACK_GOVERNANCE = [
   {
     id: 1,
-    panchayat_id: "GP-MAHA-042",
+    panchayat_id: "GP-KPG-01",
     title: "Special Gram Sabha Meeting: Monsoon Development Plan Approval",
     title_hi: "विशेष ग्राम सभा बैठक: वार्षिक विकास कार्य योजना एवं बजट अनुमोदन",
     title_mr: "विशेष ग्रामसभा बैठक: वार्षिक विकास आराखडा व अंदाजपत्रक मंजुरी",
@@ -149,7 +149,7 @@ const FALLBACK_GOVERNANCE = [
   },
   {
     id: 2,
-    panchayat_id: "GP-MAHA-042",
+    panchayat_id: "GP-KPG-01",
     title: "Quarterly Gram Sabha: Budget Review & Audit Presentation",
     title_hi: "त्रैमासिक ग्राम सभा: बजट समीक्षा एवं सार्वजनिक अंकेक्षण (ऑडिट) प्रस्तुति",
     title_mr: "त्रैमासिक ग्रामसभा: खर्च आढावा आणि सामाजिक लेखापरीक्षण (ऑडिट) सादरीकरण",
@@ -163,7 +163,7 @@ const FALLBACK_GOVERNANCE = [
   },
   {
     id: 3,
-    panchayat_id: "GP-MAHA-042",
+    panchayat_id: "GP-KPG-01",
     title: "Concrete Pavement & Stormwater Drain Construction (Ward 2 to ZP School)",
     title_hi: "वार्ड नंबर 2 से प्राथमिक विद्यालय तक कंक्रीट सड़क व जल निकासी नाली निर्माण",
     title_mr: "वॉर्ड क्र. 2 ते जि.प. प्राथमिक शाळा सिमेंट काँक्रीट रस्ता व बंदिस्त गटार बांधकाम",
@@ -177,7 +177,7 @@ const FALLBACK_GOVERNANCE = [
   },
   {
     id: 4,
-    panchayat_id: "GP-MAHA-042",
+    panchayat_id: "GP-KPG-01",
     title: "Installation of 24 High-Mast Solar Streetlights in Harijan Wasti & Main Chowk",
     title_hi: "हरिजन बस्ती एवं मुख्य चौक में 24 हाई-मास्ट सोलर स्ट्रीट लाइट स्थापना",
     title_mr: "हरिजन वस्ती व मुख्य बाजारपेठ चौकात 24 सौर पथदिवे (सोलर लाईट) बसविणे",
@@ -191,7 +191,7 @@ const FALLBACK_GOVERNANCE = [
   },
   {
     id: 5,
-    panchayat_id: "GP-MAHA-042",
+    panchayat_id: "GP-KPG-01",
     title: "15th Finance Commission Untied Grant Allocation (FY 2025-26)",
     title_hi: "15वां वित्त आयोग अबद्ध अनुदान आवंटन (वित्तीय वर्ष 2025-26)",
     title_mr: "15 वा वित्त आयोग अबद्ध विकास निधी वाटप (सन 2025-26)",

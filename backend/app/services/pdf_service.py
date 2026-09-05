@@ -107,7 +107,7 @@ class PDFService:
                 Paragraph("<b>Target Scheme:</b>", table_label_style),
                 Paragraph(f"<b>{scheme.get('name', 'N/A')}</b>", table_value_style),
                 Paragraph("<b>Gram Panchayat:</b>", table_label_style),
-                Paragraph("Shivajinagar GP (Code: 27042)", table_value_style)
+                Paragraph("Kopargaon GP, Ahilyanagar (Code: 27142)", table_value_style)
             ]
         ]
         ref_table = Table(ref_data, colWidths=[1.5*inch, 2.2*inch, 1.3*inch, 2.0*inch])
