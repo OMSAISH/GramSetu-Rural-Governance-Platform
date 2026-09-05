@@ -1,7 +1,16 @@
 // GramSetu Robust API Client with Zero-Failure Client-Side Fallback Engine
 // Automatically connects to live backend if available, or seamlessly runs in client-side mode on Vercel
 
-let customApiUrl = localStorage.getItem('gramsetu_custom_api_url') || '';
+function normalizeApiUrl(url: string): string {
+  let cleaned = (url || '').trim().replace(/\/+$/, '');
+  if (!cleaned) return '';
+  if (!cleaned.endsWith('/api')) {
+    cleaned = `${cleaned}/api`;
+  }
+  return cleaned;
+}
+
+let customApiUrl = normalizeApiUrl(localStorage.getItem('gramsetu_custom_api_url') || '');
 const API_BASE_URL = customApiUrl || import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 function getAuthHeader(): Record<string, string> {
@@ -350,7 +359,7 @@ function evaluateRuleNode(node: any, profile: any): [boolean, string[], string[]
 export const api = {
   // Config
   setCustomApiUrl(url: string) {
-    customApiUrl = url.trim();
+    customApiUrl = normalizeApiUrl(url);
     if (customApiUrl) {
       localStorage.setItem('gramsetu_custom_api_url', customApiUrl);
     } else {
