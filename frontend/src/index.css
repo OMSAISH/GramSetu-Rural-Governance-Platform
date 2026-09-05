@@ -4,10 +4,26 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased;
+    @apply bg-slate-100 text-slate-900 font-sans antialiased;
     margin: 0;
     padding: 0;
   }
+}
+
+/* Government Marquee Animation */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
 }
 
 /* Custom low-bandwidth clean styling */
@@ -18,4 +34,14 @@
 .scrollbar-thin::-webkit-scrollbar-thumb {
   background-color: #cbd5e1;
   border-radius: 9999px;
+}
+
+/* Government Stamp Badge Watermark */
+.gov-stamp {
+  border: 2px dashed #0D5C3A;
+  color: #0D5C3A;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transform: rotate(-2deg);
 }

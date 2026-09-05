@@ -2,14 +2,14 @@
 
 **Multilingual Gram Panchayat Governance, Scheme Entitlement & Grievance Redressal Assistant**
 
-[![AWS Amplify](https://img.shields.io/badge/Hosted_on-AWS_Amplify-FF9900?logo=aws-amplify&logoColor=white)](https://main.d2gvsjrf0mb17d.amplifyapp.com)
+[![Vercel](https://img.shields.io/badge/Hosted_on-Vercel-000000?logo=vercel&logoColor=white)](https://gramsetu-rural-governance-platform.vercel.app)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI_0.110+-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/Frontend-React_19_+_TypeScript-61DAFB?logo=react&logoColor=black)](https://reactjs.org)
 [![TailwindCSS](https://img.shields.io/badge/Styling-Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL_16-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org)
 [![Docker](https://img.shields.io/badge/Deployment-Docker_Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com)
 
-**Live AWS Deployed URL:** [https://main.d2gvsjrf0mb17d.amplifyapp.com](https://main.d2gvsjrf0mb17d.amplifyapp.com)
+**Live Deployed Portal:** [https://gramsetu-rural-governance-platform.vercel.app](https://gramsetu-rural-governance-platform.vercel.app)
 
 ---
 

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { api } from '../services/api';
-import { AlertCircle, Search, CheckCircle2, ShieldAlert, Copy, Check, Send, Sparkles } from 'lucide-react';
+import { 
+  AlertCircle, Search, CheckCircle2, ShieldAlert, Copy, 
+  Check, Send, Sparkles, Landmark
+} from 'lucide-react';
 
 interface GrievancePortalProps {
   initialTrackingId?: string;
@@ -32,29 +35,29 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
   // Quick category live preview from description
   useEffect(() => {
     const text = description.toLowerCase();
-    if (text.includes('water') || text.includes('pipe') || text.includes('pani') || text.includes('paani') || text.includes('नल') || text.includes('पाणी') || text.includes('गळती')) {
+    if (text.includes('water') || text.includes('pipe') || text.includes('pani') || text.includes('paani') || text.includes('नल') || text.includes('पाणी') || text.includes('गळती') || text.includes('जल')) {
       setPredictedCategory('water');
-      setPredictedDept('Rural Water Supply & Sanitation Department');
+      setPredictedDept('ग्रामीण पाणी पुरवठा व स्वच्छता विभाग (Rural Water Supply Dept)');
       setPredictedSla(3);
     } else if (text.includes('light') || text.includes('electric') || text.includes('bijli') || text.includes('pole') || text.includes('वीज') || text.includes('लाईट') || text.includes('पथदिवे')) {
       setPredictedCategory('electricity');
-      setPredictedDept('Gram Panchayat Energy Cell (MSEDCL/Discom)');
+      setPredictedDept('ग्रामपंचायत ऊर्जा कक्ष व महावितरण (MSEDCL Energy Cell)');
       setPredictedSla(4);
-    } else if (text.includes('road') || text.includes('pothole') || text.includes('sadak') || text.includes('rasta') || text.includes('खड्डे') || text.includes('रस्ता')) {
+    } else if (text.includes('road') || text.includes('pothole') || text.includes('sadak') || text.includes('rasta') || text.includes('खड्डे') || text.includes('रस्ता') || text.includes('डामर')) {
       setPredictedCategory('road');
-      setPredictedDept('Public Works Department (PWD Rural Roads)');
+      setPredictedDept('सार्वजनिक बांधकाम विभाग - ग्रामीण रस्ते (PWD Rural Roads)');
       setPredictedSla(15);
     } else if (text.includes('sanitation') || text.includes('garbage') || text.includes('drain') || text.includes('kachra') || text.includes('कचरा') || text.includes('गटार') || text.includes('घाण')) {
       setPredictedCategory('sanitation');
-      setPredictedDept('Health & Rural Sanitation Committee');
+      setPredictedDept('आरोग्य व स्वच्छता समिती (Gram Sanitation Committee)');
       setPredictedSla(7);
     } else if (text.includes('pension') || text.includes('widow') || text.includes('old age') || text.includes('पेन्शन') || text.includes('पेंशन') || text.includes('मानधन')) {
       setPredictedCategory('pension');
-      setPredictedDept('Social Welfare & Women/Child Development Cell');
+      setPredictedDept('समाजकल्याण व महिला-बाल विकास कक्ष (Social Welfare Cell)');
       setPredictedSla(15);
     } else {
       setPredictedCategory('other');
-      setPredictedDept('Panchayat Development Office (PDO)');
+      setPredictedDept('ग्रामपंचायत विकास अधिकारी दफ्तर (PDO Office)');
       setPredictedSla(10);
     }
   }, [description]);
@@ -112,34 +115,35 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-teal-800 to-emerald-900 text-white rounded-2xl p-6 sm:p-8 shadow-md">
-        <div className="flex items-center space-x-3 mb-2">
-          <AlertCircle className="w-8 h-8 text-teal-300" />
-          <h1 className="text-xl sm:text-2xl font-black">{t.grievance.title}</h1>
+      {/* Official Aaple Sarkar / CPGRAMS Header Banner */}
+      <div className="bg-gradient-to-r from-[#0A2540] via-[#133E87] to-[#0A2540] text-white rounded-xl p-5 sm:p-7 shadow-md border-l-4 border-amber-500">
+        <div className="flex items-center space-x-2 text-amber-400 font-bold text-xs uppercase tracking-wider mb-1">
+          <Landmark className="w-4 h-4" />
+          <span>आपले सरकार / CPGRAMS लोकशाही दिन प्रणाली</span>
         </div>
-        <p className="text-teal-100 text-sm sm:text-base max-w-2xl">
+        <h1 className="text-xl sm:text-2xl font-black">{t.grievance.title}</h1>
+        <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-2xl">
           {t.grievance.subtitle}
         </p>
 
         {/* Tab Toggle */}
-        <div className="flex space-x-2 mt-6 bg-teal-950/50 p-1.5 rounded-xl max-w-md">
+        <div className="flex space-x-2 mt-5 bg-slate-900/60 p-1.5 rounded-xl max-w-md border border-slate-700">
           <button
             onClick={() => setActiveTab('submit')}
-            className={`flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${
+            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
               activeTab === 'submit'
-                ? 'bg-white text-teal-900 shadow-sm'
-                : 'text-teal-200 hover:text-white'
+                ? 'bg-amber-500 text-slate-950 shadow'
+                : 'text-slate-200 hover:text-white'
             }`}
           >
             {t.grievance.tabSubmit}
           </button>
           <button
             onClick={() => setActiveTab('track')}
-            className={`flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${
+            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
               activeTab === 'track'
-                ? 'bg-white text-teal-900 shadow-sm'
-                : 'text-teal-200 hover:text-white'
+                ? 'bg-amber-500 text-slate-950 shadow'
+                : 'text-slate-200 hover:text-white'
             }`}
           >
             {t.grievance.tabTrack}
@@ -149,32 +153,40 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
 
       {/* Tab 1: Submit Grievance */}
       {activeTab === 'submit' && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-6">
+        <div className="bg-white rounded-xl p-5 sm:p-7 shadow-sm border border-slate-300 space-y-5">
+          {/* Government Jurisdiction Header */}
+          <div className="bg-slate-100 p-3 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 flex flex-wrap items-center justify-between gap-2">
+            <span>जिल्हा: पुणे | तालुका: हवेली | ग्रामपंचायत: शिवाजीनगर</span>
+            <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded uppercase font-extrabold">
+              SLA हमी कक्ष
+            </span>
+          </div>
+
           {submittedData ? (
-            <div className="bg-emerald-50 border border-emerald-300 rounded-2xl p-6 text-center space-y-4">
+            <div className="bg-emerald-50 border-2 border-emerald-500 rounded-xl p-6 text-center space-y-4">
               <div className="w-12 h-12 rounded-full bg-emerald-700 text-white flex items-center justify-center mx-auto shadow-md">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">
+              <h3 className="text-lg font-black text-slate-900">
                 {t.grievance.successTitle}
               </h3>
               <p className="text-xs text-slate-600 max-w-md mx-auto">
-                Your grievance has been auto-classified and routed with guaranteed SLA turnaround.
+                आपली तक्रार अधिकृतपणे नोंदवून संबंधित विभागाकडे तात्काळ निवारणासाठी पाठवली आहे.
               </p>
 
-              {/* Tracking ID Badge */}
-              <div className="max-w-xs mx-auto bg-white border-2 border-emerald-600 p-4 rounded-xl shadow-sm space-y-2">
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+              {/* Official Tracking ID Card */}
+              <div className="max-w-xs mx-auto bg-white border-2 border-[#0A2540] p-4 rounded-xl shadow space-y-2">
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
                   {t.grievance.trackingIdLabel}
                 </span>
-                <span className="text-2xl font-black text-emerald-900 tracking-wider block font-mono">
+                <span className="text-2xl font-black text-[#0A2540] tracking-wider block font-mono">
                   {submittedData.tracking_id}
                 </span>
                 <button
                   onClick={() => copyToClipboard(submittedData.tracking_id)}
-                  className="w-full py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 text-xs font-bold rounded-lg flex items-center justify-center space-x-1 transition"
+                  className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-lg flex items-center justify-center space-x-1 transition border"
                 >
-                  {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copied ? t.grievance.copied : t.grievance.copyId}</span>
                 </button>
               </div>
@@ -186,53 +198,53 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
                     setActiveTab('track');
                     handleTrack(submittedData.tracking_id);
                   }}
-                  className="px-4 py-2 bg-emerald-700 text-white text-xs font-bold rounded-xl shadow hover:bg-emerald-800 transition"
+                  className="px-4 py-2 bg-[#0A2540] text-white text-xs font-bold rounded-lg shadow hover:bg-slate-800 transition"
                 >
                   {t.grievance.tabTrack} Now
                 </button>
                 <button
                   onClick={() => setSubmittedData(null)}
-                  className="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-300 transition"
+                  className="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-300 transition"
                 >
                   File Another Grievance
                 </button>
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmitGrievance} className="space-y-5">
+            <form onSubmit={handleSubmitGrievance} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  {t.grievance.descLabel}
+                <label className="block text-xs font-bold text-slate-800 mb-1.5 uppercase">
+                  {t.grievance.descLabel} <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   rows={4}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder={t.grievance.descPlaceholder}
-                  className="w-full p-3.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 outline-none"
+                  className="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm focus:bg-white focus:ring-2 focus:ring-[#0A2540]/20 focus:border-[#0A2540] outline-none font-medium leading-relaxed"
                   required
                 />
               </div>
 
-              {/* Dynamic Auto-Detection Card */}
-              {description.trim().length > 10 && (
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs space-y-2">
-                  <div className="flex items-center space-x-1.5 text-emerald-700 font-bold">
-                    <Sparkles className="w-4 h-4" />
-                    <span>Auto-Routing Intelligence & SLA Preview:</span>
+              {/* Dynamic Auto-Detection & SLA Guarantee Card */}
+              {description.trim().length > 8 && (
+                <div className="bg-amber-50/70 border border-amber-300 rounded-xl p-4 text-xs space-y-2">
+                  <div className="flex items-center space-x-1.5 text-amber-900 font-bold uppercase text-[11px]">
+                    <Sparkles className="w-4 h-4 text-amber-600" />
+                    <span>स्वयंचलित विभाग वाटप व SLA मुदत पूर्वपरीक्षण:</span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                    <div className="bg-white p-2.5 rounded-lg border border-slate-200">
-                      <span className="text-slate-400 block text-[10px] uppercase font-bold">Category</span>
-                      <span className="font-bold text-slate-800 capitalize">{predictedCategory}</span>
+                    <div className="bg-white p-2.5 rounded-lg border border-amber-200 shadow-sm">
+                      <span className="text-slate-400 block text-[10px] uppercase font-bold">तक्रार श्रेणी (Category)</span>
+                      <span className="font-bold text-slate-900 capitalize">{predictedCategory}</span>
                     </div>
-                    <div className="bg-white p-2.5 rounded-lg border border-slate-200">
-                      <span className="text-slate-400 block text-[10px] uppercase font-bold">Assigned Department</span>
-                      <span className="font-bold text-slate-800">{predictedDept}</span>
+                    <div className="bg-white p-2.5 rounded-lg border border-amber-200 shadow-sm">
+                      <span className="text-slate-400 block text-[10px] uppercase font-bold">नियुक्त विभाग (Department)</span>
+                      <span className="font-bold text-slate-900 line-clamp-1">{predictedDept}</span>
                     </div>
-                    <div className="bg-white p-2.5 rounded-lg border border-slate-200">
-                      <span className="text-slate-400 block text-[10px] uppercase font-bold">SLA Target</span>
-                      <span className="font-bold text-emerald-700">{predictedSla} {t.grievance.days} resolution</span>
+                    <div className="bg-white p-2.5 rounded-lg border border-amber-200 shadow-sm">
+                      <span className="text-slate-400 block text-[10px] uppercase font-bold">निवारण मुदत (SLA Limit)</span>
+                      <span className="font-bold text-emerald-700">{predictedSla} {t.grievance.days} (हमी मुदत)</span>
                     </div>
                   </div>
                 </div>
@@ -241,13 +253,13 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
               <button
                 type="submit"
                 disabled={isSubmitting || !description.trim()}
-                className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white rounded-xl font-bold shadow-md transition flex items-center justify-center space-x-2 text-sm"
+                className="w-full py-3 bg-[#0A2540] hover:bg-slate-800 disabled:opacity-50 text-white rounded-xl font-bold shadow transition flex items-center justify-center space-x-2 text-xs uppercase tracking-wider"
               >
                 {isSubmitting ? (
                   <span>{t.grievance.submitting}</span>
                 ) : (
                   <>
-                    <Send className="w-4 h-4" />
+                    <Send className="w-4 h-4 text-amber-400" />
                     <span>{t.grievance.submitBtn}</span>
                   </>
                 )}
@@ -259,7 +271,7 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
 
       {/* Tab 2: Track Grievance */}
       {activeTab === 'track' && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-6">
+        <div className="bg-white rounded-xl p-5 sm:p-7 shadow-sm border border-slate-300 space-y-6">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -268,22 +280,22 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
             className="flex items-center space-x-2"
           >
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               <input
                 type="text"
                 value={trackingIdInput}
                 onChange={(e) => setTrackingIdInput(e.target.value)}
                 placeholder={t.grievance.trackInputPlaceholder}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-mono focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 outline-none uppercase"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-mono focus:bg-white focus:ring-2 focus:ring-[#0A2540]/20 focus:border-[#0A2540] outline-none uppercase font-bold"
                 required
               />
             </div>
             <button
               type="submit"
               disabled={isTracking || !trackingIdInput.trim()}
-              className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm transition"
+              className="px-5 py-2.5 bg-[#0A2540] hover:bg-slate-800 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow transition"
             >
-              {isTracking ? 'Searching...' : t.grievance.trackBtn}
+              {isTracking ? 'तपासत आहे...' : t.grievance.trackBtn}
             </button>
           </form>
 
@@ -302,26 +314,26 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
                   <ShieldAlert className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
                   <div>
                     <span className="font-bold text-red-900 block mb-0.5">
-                      {t.grievance.slaBreachedBadge}: Priority Escalation Active
+                      {t.grievance.slaBreachedBadge}: वरिष्ठ अधिकारी उच्चस्तरावर वर्ग
                     </span>
-                    This grievance has passed its designated SLA deadline and has been auto-escalated to the Block Development Officer (BDO) & Sarpanch for expedited resolution.
+                    निश्चित SLA मुदत संपल्यामुळे ही तक्रार गट विकास अधिकारी (BDO) व तहसीलदार यांच्या विशेष नियंत्रण कक्षाकडे वर्ग करण्यात आली आहे.
                   </div>
                 </div>
               )}
 
               {/* Grievance Details Card */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-3 text-xs">
+              <div className="bg-slate-50 border border-slate-300 rounded-xl p-5 space-y-3 text-xs">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Tracking ID</span>
-                    <span className="text-base font-black text-slate-900 font-mono">{trackingResult.tracking_id}</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">नोंदणी क्र. (Tracking ID)</span>
+                    <span className="text-base font-black text-[#0A2540] font-mono">{trackingResult.tracking_id}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Category</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">श्रेणी (Category)</span>
                     <span className="font-bold text-slate-800 capitalize">{trackingResult.category}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">SLA Target Date</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">SLA मुदत तारीख (Deadline)</span>
                     <span className="font-bold text-emerald-800">
                       {new Date(trackingResult.sla_deadline).toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' })}
                     </span>
@@ -329,15 +341,15 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
                 </div>
 
                 <div>
-                  <span className="font-bold text-slate-700 block mb-1">Original Grievance Statement:</span>
-                  <p className="text-slate-600 italic bg-white p-3 rounded-lg border border-slate-200">
+                  <span className="font-bold text-slate-700 block mb-1">तक्रारीचे मूळ वर्णन:</span>
+                  <p className="text-slate-800 bg-white p-3 rounded-lg border border-slate-200 font-medium">
                     "{trackingResult.description}"
                   </p>
                 </div>
 
                 <div>
-                  <span className="font-bold text-slate-700 block mb-1">Assigned Department:</span>
-                  <p className="text-slate-800 font-semibold">{trackingResult.department_assigned}</p>
+                  <span className="font-bold text-slate-700 block mb-1">संबंधित विभाग:</span>
+                  <p className="text-slate-900 font-bold">{trackingResult.department_assigned}</p>
                 </div>
 
                 {trackingResult.resolution_notes && (
@@ -348,17 +360,17 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
                 )}
               </div>
 
-              {/* Visual 4-Step SLA Progress Timeline */}
+              {/* Visual 4-Step SLA Progress Timeline with Official Stamps */}
               <div>
                 <h4 className="font-bold text-xs text-slate-700 mb-4 uppercase tracking-wider">
-                  Live Resolution Timeline
+                  तक्रार निवारण टप्पे (Official Resolution Milestones)
                 </h4>
 
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-center text-xs">
                   {/* Step 1: Submitted */}
                   <div className="bg-emerald-50 border border-emerald-300 p-3 rounded-xl">
-                    <div className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center mx-auto mb-2 font-bold text-xs">
-                      1
+                    <div className="w-7 h-7 rounded-full bg-emerald-700 text-white flex items-center justify-center mx-auto mb-2 font-bold text-xs">
+                      १
                     </div>
                     <span className="font-bold text-slate-900 block">{t.grievance.timeline.submitted}</span>
                     <span className="text-[10px] text-slate-500">
@@ -374,13 +386,13 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
                   }`}>
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center mx-auto mb-2 font-bold text-xs ${
                       ['in_progress', 'escalated', 'resolved'].includes(trackingResult.status)
-                        ? 'bg-emerald-600 text-white'
+                        ? 'bg-emerald-700 text-white'
                         : 'bg-slate-300 text-slate-600'
                     }`}>
-                      2
+                      २
                     </div>
                     <span className="font-bold text-slate-900 block">{t.grievance.timeline.inProgress}</span>
-                    <span className="text-[10px] text-slate-500">Inspection & Action</span>
+                    <span className="text-[10px] text-slate-500">स्थळ पाहणी व कार्यवाही</span>
                   </div>
 
                   {/* Step 3: SLA Status / Escalation */}
@@ -392,15 +404,15 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center mx-auto mb-2 font-bold text-xs ${
                       trackingResult.status === 'escalated'
                         ? 'bg-red-600 text-white animate-pulse'
-                        : (trackingResult.status === 'resolved' ? 'bg-emerald-600 text-white' : 'bg-slate-300 text-slate-600')
+                        : (trackingResult.status === 'resolved' ? 'bg-emerald-700 text-white' : 'bg-slate-300 text-slate-600')
                     }`}>
-                      3
+                      ३
                     </div>
                     <span className="font-bold text-slate-900 block">
-                      {trackingResult.status === 'escalated' ? t.grievance.timeline.escalated : 'SLA Compliance'}
+                      {trackingResult.status === 'escalated' ? t.grievance.timeline.escalated : 'मुदत अनुपालन'}
                     </span>
                     <span className="text-[10px] text-slate-500">
-                      {trackingResult.status === 'escalated' ? 'Overdue' : 'Within Target'}
+                      {trackingResult.status === 'escalated' ? 'मुदत संपली' : 'वेळेत सुरू'}
                     </span>
                   </div>
 
@@ -412,14 +424,14 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
                   }`}>
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center mx-auto mb-2 font-bold text-xs ${
                       trackingResult.status === 'resolved'
-                        ? 'bg-emerald-700 text-white'
+                        ? 'bg-emerald-800 text-white'
                         : 'bg-slate-300 text-slate-600'
                     }`}>
-                      4
+                      ४
                     </div>
                     <span className="font-bold text-slate-900 block">{t.grievance.timeline.resolved}</span>
                     <span className="text-[10px] text-slate-500">
-                      {trackingResult.resolved_at ? new Date(trackingResult.resolved_at).toLocaleDateString() : 'Pending'}
+                      {trackingResult.resolved_at ? new Date(trackingResult.resolved_at).toLocaleDateString() : 'प्रक्रियाधीन'}
                     </span>
                   </div>
                 </div>
