@@ -1,6 +1,9 @@
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+is_vercel = os.getenv("VERCEL") == "1" or "VERCEL" in os.environ
+default_db_path = "/tmp/gramsetu.db" if is_vercel else "./gramsetu.db"
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(case_sensitive=True)
 
@@ -12,7 +15,7 @@ class Settings(BaseSettings):
     
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL",
-        "sqlite+aiosqlite:///./gramsetu.db"
+        f"sqlite+aiosqlite:///{default_db_path}"
     )
     
     CORS_ORIGINS: list[str] = [

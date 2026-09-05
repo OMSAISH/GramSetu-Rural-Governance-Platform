@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -44,15 +45,19 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Error during database seed: {e}")
 
-    # Start SLA monitor
-    monitor_task = asyncio.create_task(background_sla_monitor())
+    # Start SLA monitor only in long-running servers (not serverless)
+    is_serverless = os.getenv("VERCEL") == "1" or "VERCEL" in os.environ
+    monitor_task = None
+    if not is_serverless:
+        monitor_task = asyncio.create_task(background_sla_monitor())
     yield
     # Shutdown
-    monitor_task.cancel()
-    try:
-        await monitor_task
-    except asyncio.CancelledError:
-        pass
+    if monitor_task:
+        monitor_task.cancel()
+        try:
+            await monitor_task
+        except asyncio.CancelledError:
+            pass
 
 app = FastAPI(
     title="GramSetu API",
