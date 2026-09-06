@@ -23,7 +23,7 @@ def set_slide_title(slide, title_text):
             format_run(r, font_name="Arial", size_pt=26, bold=True, color_rgb=RGBColor(10, 37, 64))
             return
 
-def set_team_badge(slide, team_name="Team GramSetu"):
+def set_team_badge(slide, team_name="SankalpX"):
     for shape in slide.shapes:
         if "Oval" in shape.name and shape.has_text_frame:
             tf = shape.text_frame
@@ -32,7 +32,7 @@ def set_team_badge(slide, team_name="Team GramSetu"):
             p.alignment = PP_ALIGN.CENTER
             r = p.add_run()
             r.text = team_name
-            format_run(r, font_name="Arial", size_pt=9.5, bold=True, color_rgb=RGBColor(255, 255, 255))
+            format_run(r, font_name="Arial", size_pt=10.5, bold=True, color_rgb=RGBColor(255, 255, 255))
             return
 
 def populate_slide_1(slide):
@@ -45,34 +45,34 @@ def populate_slide_1(slide):
             
             # Position adjustment for clean spacing
             shape.left = Inches(0.8)
-            shape.top = Inches(2.3)
-            shape.width = Inches(11.5)
-            shape.height = Inches(4.2)
+            shape.top = Inches(2.05)
+            shape.width = Inches(11.7)
+            shape.height = Inches(4.7)
             
             fields = [
-                ("Problem Statement ID –", " SIH2026 (Smart Governance / Citizen Empowerment)"),
+                ("Problem Statement ID –", " SIH2026 (Smart Governance / Citizen Welfare)"),
                 ("Problem Statement Title –", " Multilingual Digital Governance, Welfare Scheme Entitlement & Grievance Assistant for Rural Gram Panchayats"),
                 ("Theme –", " Smart Governance & Citizen Empowerment / Rural Development"),
                 ("PS Category –", " Software"),
-                ("Team ID –", " [Enter Your SIH Registered Team ID]"),
-                ("Team Name –", " Team GramSetu (Registered on portal)"),
+                ("Team ID –", " [Enter Your Registered SIH Team ID]"),
+                ("Team Name (Registered on portal) –", " SankalpX"),
+                ("Team Members –", " More Sanjivani, Deshmukh Anushka, Thorat Saujanya, Nehe Dhanshri, Khurud Tanushri, Dhokchaule Omsaish"),
                 ("Project Name –", " GramSetu (ग्रामसेतू) — Rural Governance Platform"),
-                ("Live Working Portal –", " https://gramsetu-rural-governance-platform.vercel.app"),
-                ("Live Backend API –", " https://gramsetu-rural-governance-platform.onrender.com")
+                ("Live Working Prototype –", " https://gramsetu-rural-governance-platform.vercel.app  (API: https://gramsetu-rural-governance-platform.onrender.com)")
             ]
             
             for idx, (label, val) in enumerate(fields):
                 p = tf.paragraphs[0] if idx == 0 else tf.add_paragraph()
-                p.space_before = Pt(3)
-                p.space_after = Pt(3)
+                p.space_before = Pt(2.5)
+                p.space_after = Pt(2.5)
                 
                 r_label = p.add_run()
                 r_label.text = label
-                format_run(r_label, font_name="Arial", size_pt=14, bold=True, color_rgb=RGBColor(10, 37, 64))
+                format_run(r_label, font_name="Arial", size_pt=13, bold=True, color_rgb=RGBColor(10, 37, 64))
                 
                 r_val = p.add_run()
                 r_val.text = val
-                format_run(r_val, font_name="Arial", size_pt=13.5, bold=False, color_rgb=RGBColor(51, 65, 85))
+                format_run(r_val, font_name="Arial", size_pt=12.5, bold=False, color_rgb=RGBColor(51, 65, 85))
 
 def build_content_box(slide, sections):
     for shape in slide.shapes:
@@ -298,7 +298,8 @@ def update_slide_7_notice(slide):
 
 def main():
     template_path = "SIH2026-IDEA-Presentation-Format.pptx"
-    output_path = "/Users/omsaishdhokchaule/Downloads/GramSetu/GramSetu_SIH2026_Idea_Presentation.pptx"
+    out_7slides = "/Users/omsaishdhokchaule/Downloads/GramSetu/GramSetu_SIH2026_Idea_Presentation.pptx"
+    out_6slides = "/Users/omsaishdhokchaule/Downloads/GramSetu/GramSetu_SIH2026_Submission_Ready_6Slides.pptx"
     
     prs = pptx.Presentation(template_path)
     print(f"Loaded template with {len(prs.slides)} slides.")
@@ -311,8 +312,16 @@ def main():
     populate_slide_6(prs.slides[5])
     update_slide_7_notice(prs.slides[6])
     
-    prs.save(output_path)
-    print(f"Successfully created presentation: {output_path}")
+    # Save 7-slide version with instructions checklist
+    prs.save(out_7slides)
+    print(f"Successfully created 7-slide deck: {out_7slides}")
+    
+    # Drop slide 7 to create strict SIH 6-slide deck
+    rId = prs.slides._sldIdLst[6].rId
+    prs.part.drop_rel(rId)
+    del prs.slides._sldIdLst[6]
+    prs.save(out_6slides)
+    print(f"Successfully created 6-slide submission deck: {out_6slides}")
 
 if __name__ == "__main__":
     main()

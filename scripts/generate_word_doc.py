@@ -128,9 +128,11 @@ def build_gramsetu_document(output_path):
     run_sub.bold = True
     run_sub.font.color.rgb = RGBColor(217, 119, 6)
     
-    meta_table = doc.add_table(rows=6, cols=2)
+    meta_table = doc.add_table(rows=8, cols=2)
     meta_table.alignment = WD_TABLE_ALIGNMENT.CENTER
     meta_data = [
+        ("Team Name & ID:", "SankalpX (SIH 2026)"),
+        ("Team Members:", "More Sanjivani, Deshmukh Anushka, Thorat Saujanya, Nehe Dhanshri, Khurud Tanushri, Dhokchaule Omsaish"),
         ("Live Citizen Portal (Vercel):", "https://gramsetu-rural-governance-platform.vercel.app"),
         ("Live Cloud Backend API (Render):", "https://gramsetu-rural-governance-platform.onrender.com"),
         ("GitHub Source Repository:", "https://github.com/OMSAISH/GramSetu-Rural-Governance-Platform.git"),
