@@ -19,7 +19,7 @@ interface CitizenChatProps {
 }
 
 export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
-  const { language, t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
@@ -29,8 +29,27 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [autoSpeak, setAutoSpeak] = useState(false);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
+  const [systemVoices, setSystemVoices] = useState<SpeechSynthesisVoice[]>([]);
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+
+  // Pre-load and cache system voices for zero-latency Indian & Marathi TTS
+  useEffect(() => {
+    if (!('speechSynthesis' in window)) return;
+    const loadVoices = () => {
+      const v = window.speechSynthesis.getVoices();
+      if (v && v.length > 0) {
+        setSystemVoices(v);
+      }
+    };
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = null;
+      }
+    };
+  }, []);
 
   // Initialize welcoming message whenever language changes
   useEffect(() => {
@@ -75,7 +94,7 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
     };
   }, []);
 
-  // Text-To-Speech (Speak Aloud)
+  // Text-To-Speech (Speak Aloud with Native Indian & Marathi Devanagari Support)
   const speakMessage = (text: string, msgId?: string) => {
     if (!('speechSynthesis' in window)) return;
 
@@ -88,20 +107,71 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
     window.speechSynthesis.cancel();
     setSpeakingMsgId(msgId || 'general');
 
-    // Clean text: strip markdown bullets, bold asterisks, emojis
+    // Clean text: strip markdown symbols, URLs, and non-printable noise
     const cleanText = text
       .replace(/[*#_`]/g, '')
       .replace(/https?:\/\/\S+/g, '')
+      .replace(/[•-]\s+/g, '')
       .trim();
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = language === 'mr' ? 'mr-IN' : (language === 'hi' ? 'hi-IN' : 'en-IN');
-    utterance.rate = 0.95;
+    utterance.rate = 0.92;
 
-    // Try finding matching regional voice
-    const voices = window.speechSynthesis.getVoices();
-    const matchVoice = voices.find(v => v.lang.startsWith(language === 'mr' ? 'mr' : (language === 'hi' ? 'hi' : 'en')));
-    if (matchVoice) utterance.voice = matchVoice;
+    const voices = systemVoices.length > 0 ? systemVoices : window.speechSynthesis.getVoices();
+    let matchVoice: SpeechSynthesisVoice | undefined;
+
+    if (language === 'mr') {
+      // 1. Direct Marathi voice (e.g., 'Google मराठी' on Android/ChromeOS)
+      matchVoice = voices.find(v => {
+        const l = v.lang.toLowerCase();
+        const n = v.name.toLowerCase();
+        return l.startsWith('mr') || n.includes('marathi');
+      });
+
+      // 2. If no Marathi voice on device (typical on macOS and Windows), use native Devanagari Hindi voice
+      // ('Lekha' on macOS, 'Google हिन्दी' on Chrome, 'Microsoft Hemant / Kalpana' on Windows).
+      // Because Marathi and Hindi share the same Devanagari script, this reads Marathi with authentic Indian pronunciation instead of English!
+      if (!matchVoice) {
+        matchVoice = voices.find(v => {
+          const l = v.lang.toLowerCase();
+          const n = v.name.toLowerCase();
+          return l.startsWith('hi') || n.includes('hindi') || n.includes('lekha') || n.includes('kalpana') || n.includes('hemant');
+        });
+      }
+
+      // 3. Fallback to Indian English voice
+      if (!matchVoice) {
+        matchVoice = voices.find(v => {
+          const l = v.lang.toLowerCase();
+          const n = v.name.toLowerCase();
+          return l.includes('in') || n.includes('india') || n.includes('rishi');
+        });
+      }
+    } else if (language === 'hi') {
+      matchVoice = voices.find(v => {
+        const l = v.lang.toLowerCase();
+        const n = v.name.toLowerCase();
+        return l.startsWith('hi') || n.includes('hindi') || n.includes('lekha') || n.includes('kalpana') || n.includes('hemant');
+      }) || voices.find(v => {
+        const l = v.lang.toLowerCase();
+        const n = v.name.toLowerCase();
+        return l.startsWith('mr') || l.includes('in') || n.includes('india');
+      });
+    } else {
+      matchVoice = voices.find(v => {
+        const l = v.lang.toLowerCase();
+        const n = v.name.toLowerCase();
+        return l.startsWith('en-in') || n.includes('rishi') || n.includes('india');
+      }) || voices.find(v => v.lang.toLowerCase().startsWith('en'));
+    }
+
+    if (matchVoice) {
+      utterance.voice = matchVoice;
+      // CRITICAL: Set utterance.lang to matchVoice.lang so browser engine never rejects the voice
+      utterance.lang = matchVoice.lang;
+    } else {
+      utterance.lang = language === 'mr' ? 'mr-IN' : (language === 'hi' ? 'hi-IN' : 'en-IN');
+    }
 
     utterance.onend = () => setSpeakingMsgId(null);
     utterance.onerror = () => setSpeakingMsgId(null);
@@ -172,8 +242,8 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
     }, 600);
   };
 
-  // Robust Speech Recognition
-  const toggleVoiceInput = (retryWithFallbackLang = false) => {
+  // Robust Speech Recognition strictly locked to chosen language
+  const toggleVoiceInput = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
@@ -199,14 +269,10 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
       const recognition = new SpeechRecognition();
       recognitionRef.current = recognition;
       
-      // Use standard language or fallback to navigator language if retrying
-      if (retryWithFallbackLang) {
-        recognition.lang = navigator.language || 'en-IN';
-      } else {
-        recognition.lang = language === 'mr' ? 'mr-IN' : (language === 'hi' ? 'hi-IN' : 'en-IN');
-      }
+      // CRITICAL: Strictly lock recognition language to selected language. NEVER fall back to navigator.language (English)!
+      recognition.lang = language === 'mr' ? 'mr-IN' : (language === 'hi' ? 'hi-IN' : 'en-IN');
 
-      // CRITICAL FIX: interimResults = false avoids the fragile WebSocket streaming that causes event.error = 'network'
+      // interimResults = false avoids the fragile WebSocket streaming that causes event.error = 'network'
       recognition.interimResults = false;
       recognition.continuous = false;
       recognition.maxAlternatives = 1;
@@ -216,8 +282,8 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
         setVoiceError(null);
         setVoiceFeedback(
           language === 'mr' 
-            ? "ऐकत आहे... कृपया स्पष्टपणे बोला" 
-            : (language === 'hi' ? "सुन रहे हैं... कृपया स्पष्ट बोलें" : "Listening... Please speak clearly")
+            ? "ऐकत आहे... कृपया मराठीत बोला" 
+            : (language === 'hi' ? "सुन रहे हैं... कृपया हिंदी में बोलें" : "Listening... Please speak clearly")
         );
       };
 
@@ -251,12 +317,6 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
               : "No speech detected. Please press the mic again or use sample voice queries."
           );
         } else if (event.error === 'network') {
-          if (!retryWithFallbackLang && language === 'mr') {
-            // Auto-retry once with standard language tag
-            toggleVoiceInput(true);
-            return;
-          }
-
           if (isBrave) {
             setVoiceError(
               language === 'mr'
@@ -266,7 +326,7 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
           } else {
             setVoiceError(
               language === 'mr'
-                ? "Google Speech नेटवर्क सेवा या Wi-Fi वर ब्लॉक आहे. काळजी करू नका, खालील १-क्लिक व्हॉईस प्रश्न वापरा (ऑडिओ उत्तर लगेच ऐकू येईल!):"
+                ? "Google Speech नेटवर्क सेवा या Wi-Fi वर ब्लॉक आहे. काळजी करू नका, खालील १-क्लिक मराठी प्रश्न वापरा (मराठीत ऑडिओ उत्तर ऐकू येईल!):"
                 : "Google Speech service blocked on this network. Don't worry, click any 1-tap voice query below to hear the audio reply:"
             );
           }
@@ -284,7 +344,7 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
     } catch (err: any) {
       console.error("SpeechRecognition error:", err);
       setIsListening(false);
-      setVoiceError("Could not start microphone: " + (err.message || "Unknown error"));
+      setVoiceError(language === 'mr' ? "मायक्रोफोन सुरू करता आला नाही." : "Could not start microphone.");
     }
   };
 
@@ -293,8 +353,8 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
     if (actLower.includes('scheme') || actLower.includes('योजना') || actLower.includes('eligibility') || actLower.includes('पात्रता')) {
       onNavigateTab('schemes');
     } else if (actLower.includes('track') || actLower.includes('ट्रॅक') || actLower.includes('तक्रार') || actLower.includes('grievance') || actLower.includes('शिकायत')) {
-      onNavigateTab('grievances', { trackingId: msgMetadata?.tracking_id });
-    } else if (actLower.includes('meeting') || actLower.includes('बैठक') || actLower.includes('work') || actLower.includes('कामे') || actLower.includes('sabha')) {
+      onNavigateTab('grievances', msgMetadata?.tracking_id ? { trackingId: msgMetadata.tracking_id } : undefined);
+    } else if (actLower.includes('meeting') || actLower.includes('सभा') || actLower.includes('बैठक') || actLower.includes('governance') || actLower.includes('work') || actLower.includes('काम')) {
       onNavigateTab('governance');
     } else {
       handleSendMessage(action);
@@ -345,9 +405,24 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
             </span>
           </button>
 
-          <span className="bg-slate-800 text-amber-300 px-2.5 py-1 rounded border border-slate-700 hidden sm:inline-block">
-            {language === 'mr' ? 'मराठी सहाय्यक' : language === 'hi' ? 'हिंदी सहायक' : 'English Assistant'}
-          </span>
+          {/* Interactive Chat Language Switcher */}
+          <div className="flex items-center bg-slate-800 p-0.5 rounded border border-slate-700">
+            {(['mr', 'hi', 'en'] as const).map((l) => (
+              <button
+                key={l}
+                type="button"
+                onClick={() => setLanguage(l)}
+                className={`px-2 py-0.5 rounded text-[11px] font-bold transition ${
+                  language === l
+                    ? 'bg-amber-500 text-slate-950 font-black shadow-sm'
+                    : 'text-slate-300 hover:text-white'
+                }`}
+                title={`Switch language to ${l === 'mr' ? 'मराठी' : (l === 'hi' ? 'हिंदी' : 'English')}`}
+              >
+                {l === 'mr' ? 'मराठी' : (l === 'hi' ? 'हिंदी' : 'EN')}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
