@@ -59,7 +59,7 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
       const recognition = new SpeechRecognition();
       recognitionRef.current = recognition;
       recognition.continuous = false;
-      recognition.interimResults = true;
+      recognition.interimResults = false;
       recognition.lang = language === 'mr' ? 'mr-IN' : language === 'hi' ? 'hi-IN' : 'en-IN';
 
       recognition.onstart = () => {
@@ -68,28 +68,19 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
       };
 
       recognition.onresult = (event: any) => {
-        let finalChunk = '';
-        let interimChunk = '';
-
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalChunk += event.results[i][0].transcript;
-          } else {
-            interimChunk += event.results[i][0].transcript;
-          }
-        }
-
-        const chunk = finalChunk || interimChunk;
-        if (chunk) {
+        const text = event.results?.[0]?.[0]?.transcript || '';
+        if (text.trim()) {
           setDescription((prev) => {
             const trimmed = prev.trim();
-            return trimmed ? `${trimmed} ${chunk}` : chunk;
+            return trimmed ? `${trimmed} ${text.trim()}` : text.trim();
           });
         }
       };
 
       recognition.onerror = (event: any) => {
         setIsListening(false);
+        const isBrave = Boolean((navigator as any).brave);
+
         if (event.error === 'not-allowed') {
           setVoiceError(
             language === 'mr'
@@ -101,9 +92,23 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
         } else if (event.error === 'no-speech') {
           setVoiceError(
             language === 'mr'
-              ? 'आवाज ऐकू आला नाही. कृपया पुन्हा माइक बटण दाबून स्पष्ट बोला.'
-              : 'No speech detected. Please press the mic button again and speak clearly.'
+              ? 'आवाज ऐकू आला नाही. कृपया पुन्हा माइक बटण दाबा किंवा खालील नमुना तक्रारी निवडा.'
+              : 'No speech detected. Please press the mic button again or use sample complaints below.'
           );
+        } else if (event.error === 'network') {
+          if (isBrave) {
+            setVoiceError(
+              language === 'mr'
+                ? 'Brave ब्राऊझर Google Voice सेवा ब्लॉक करतो. कृपया 🦁 Lion Shield बंद (Turn OFF) करा किंवा Google Chrome वापरा.'
+                : 'Brave browser blocks Google Speech. Please turn Shields DOWN (🦁) or use Google Chrome.'
+            );
+          } else {
+            setVoiceError(
+              language === 'mr'
+                ? 'Google Speech नेटवर्क अडचण. कृपया खालील १-क्लिक नमुना तक्रारींवर क्लिक करा:'
+                : 'Google Speech network issue. Please click the 1-click sample complaints below:'
+            );
+          }
         } else if (event.error !== 'aborted') {
           setVoiceError(`Voice recognition: ${event.error}`);
         }

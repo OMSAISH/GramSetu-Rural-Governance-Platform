@@ -158,8 +158,22 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
     }
   };
 
+  // Handle 1-click Presentation Voice Simulation (Guaranteed to work even if Wi-Fi / Google Speech API is blocked)
+  const handleVoiceQueryClick = (queryText: string) => {
+    setIsListening(true);
+    setVoiceError(null);
+    setVoiceFeedback(queryText);
+    setInputText(queryText);
+
+    setTimeout(() => {
+      setIsListening(false);
+      setVoiceFeedback('');
+      handleSendMessage(queryText);
+    }, 600);
+  };
+
   // Robust Speech Recognition
-  const toggleVoiceInput = () => {
+  const toggleVoiceInput = (retryWithFallbackLang = false) => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
@@ -168,7 +182,6 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
           ? "तुमच्या ब्राऊझरमध्ये व्हॉइस इनपुट समर्थित नाही. कृपया Google Chrome वापरा."
           : "Voice recognition is not supported in this browser. Please use Google Chrome or Edge."
       );
-      setTimeout(() => setVoiceError(null), 5000);
       return;
     }
 
@@ -185,8 +198,16 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
     try {
       const recognition = new SpeechRecognition();
       recognitionRef.current = recognition;
-      recognition.lang = language === 'mr' ? 'mr-IN' : (language === 'hi' ? 'hi-IN' : 'en-IN');
-      recognition.interimResults = true;
+      
+      // Use standard language or fallback to navigator language if retrying
+      if (retryWithFallbackLang) {
+        recognition.lang = navigator.language || 'en-IN';
+      } else {
+        recognition.lang = language === 'mr' ? 'mr-IN' : (language === 'hi' ? 'hi-IN' : 'en-IN');
+      }
+
+      // CRITICAL FIX: interimResults = false avoids the fragile WebSocket streaming that causes event.error = 'network'
+      recognition.interimResults = false;
       recognition.continuous = false;
       recognition.maxAlternatives = 1;
 
@@ -201,28 +222,12 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
       };
 
       recognition.onresult = (event: any) => {
-        let interimTranscript = '';
-        let finalTranscript = '';
-
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
-          } else {
-            interimTranscript += event.results[i][0].transcript;
-          }
-        }
-
-        const currentText = finalTranscript || interimTranscript;
-        if (currentText) {
-          setInputText(currentText);
-          setVoiceFeedback(currentText);
-        }
-
-        // Auto-send when final sentence is recognized
-        if (finalTranscript.trim()) {
+        const transcript = event.results?.[0]?.[0]?.transcript || '';
+        if (transcript.trim()) {
+          setInputText(transcript);
+          setVoiceFeedback(transcript);
           setIsListening(false);
-          setVoiceFeedback('');
-          handleSendMessage(finalTranscript.trim());
+          handleSendMessage(transcript.trim());
         }
       };
 
@@ -230,29 +235,44 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
         setIsListening(false);
         setVoiceFeedback('');
 
+        // Detect if Brave browser is blocking Google Speech Services
+        const isBrave = Boolean((navigator as any).brave);
+
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
           setVoiceError(
             language === 'mr'
-              ? "मायक्रोफोन परवानगी नाकारली आहे. कृपया ब्राऊझर ॲड्रेस बारमधील कुलूप (Lock) आयकॉनवर क्लिक करून मायक्रोफोन सुरू (Allow) करा."
-              : "Microphone access was blocked. Please click the Lock icon in your browser address bar to Allow microphone access."
+              ? "मायक्रोफोन परवानगी नाकारली आहे. कृपया ब्राऊझर ॲड्रेस बारमधील कुलूप (Lock) आयकॉनवर क्लिक करून 'Allow' करा."
+              : "Microphone access blocked. Click the Lock 🔒 icon in the address bar to Allow microphone."
           );
         } else if (event.error === 'no-speech') {
           setVoiceError(
             language === 'mr'
-              ? "कोणताही आवाज ऐकू आला नाही. कृपया पुन्हा माईक दाबा आणि स्पष्ट बोला."
-              : "No speech detected. Please press the mic button again and speak clearly."
+              ? "कोणताही आवाज ऐकू आला नाही. कृपया पुन्हा माईक दाबा किंवा खालील नमुना प्रश्न वापरा."
+              : "No speech detected. Please press the mic again or use sample voice queries."
           );
         } else if (event.error === 'network') {
-          setVoiceError(
-            language === 'mr'
-              ? "व्हॉइस नेटवर्क अडचण. कृपया टाईप करा किंवा खालील नमुना प्रश्नांवर क्लिक करा."
-              : "Voice recognition network issue. Please type your query or click sample voice prompts."
-          );
-        } else {
-          setVoiceError(`Voice input error: ${event.error}`);
-        }
+          if (!retryWithFallbackLang && language === 'mr') {
+            // Auto-retry once with standard language tag
+            toggleVoiceInput(true);
+            return;
+          }
 
-        setTimeout(() => setVoiceError(null), 6000);
+          if (isBrave) {
+            setVoiceError(
+              language === 'mr'
+                ? "Brave ब्राऊझर Google Voice ब्लॉक करतो. कृपया URL बारमधील 🦁 Lion Shield बंद (Turn OFF) करा किंवा Google Chrome वापरा."
+                : "Brave Browser blocks Google Speech API. Please turn Shields DOWN (🦁 icon) or use Google Chrome."
+            );
+          } else {
+            setVoiceError(
+              language === 'mr'
+                ? "Google Speech नेटवर्क सेवा या Wi-Fi वर ब्लॉक आहे. काळजी करू नका, खालील १-क्लिक व्हॉईस प्रश्न वापरा (ऑडिओ उत्तर लगेच ऐकू येईल!):"
+                : "Google Speech service blocked on this network. Don't worry, click any 1-tap voice query below to hear the audio reply:"
+            );
+          }
+        } else {
+          setVoiceError(`Voice recognition: ${event.error}. Use sample queries below.`);
+        }
       };
 
       recognition.onend = () => {
@@ -265,7 +285,6 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
       console.error("SpeechRecognition error:", err);
       setIsListening(false);
       setVoiceError("Could not start microphone: " + (err.message || "Unknown error"));
-      setTimeout(() => setVoiceError(null), 5000);
     }
   };
 
@@ -442,12 +461,38 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
 
       {/* Voice Error Banner */}
       {voiceError && (
-        <div className="px-4 py-2 bg-red-50 border-t border-red-200 text-red-800 text-xs flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
-            <span className="font-semibold">{voiceError}</span>
+        <div className="px-4 py-2.5 bg-red-50 border-t border-red-300 text-red-900 text-xs space-y-1.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+              <span className="font-bold">{voiceError}</span>
+            </div>
+            <button onClick={() => setVoiceError(null)} className="text-red-600 hover:text-red-900 font-bold ml-2">✕</button>
           </div>
-          <button onClick={() => setVoiceError(null)} className="text-red-500 font-bold ml-2">✕</button>
+          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+            <span className="text-[10px] font-bold text-slate-600">{language === 'mr' ? 'त्वरित १-क्लिक व्हॉईस प्रश्न:' : (language === 'hi' ? 'त्वरित 1-क्लिक वॉयस प्रश्न:' : 'Instant 1-Click Voice Queries:')}</span>
+            <button
+              type="button"
+              onClick={() => handleVoiceQueryClick(language === 'mr' ? "आमच्या गल्लीतील पाण्याची पाईपलाईन फुटली आहे" : (language === 'hi' ? "पानी की पाइपलाइन फूटी है" : "Water pipeline leakage on main street"))}
+              className="px-2 py-0.5 bg-white border border-red-200 text-red-800 rounded font-semibold text-[11px] hover:bg-amber-100 transition"
+            >
+              🎙️ {language === 'mr' ? 'पाणी गळती' : (language === 'hi' ? 'पानी समस्या' : 'Water Leak')}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleVoiceQueryClick(language === 'mr' ? "घरकुल योजनेची माहिती सांगा" : (language === 'hi' ? "पीएम आवास योजना क्या है" : "Tell me about PMAY housing"))}
+              className="px-2 py-0.5 bg-white border border-red-200 text-red-800 rounded font-semibold text-[11px] hover:bg-amber-100 transition"
+            >
+              🎙️ {language === 'mr' ? 'घरकुल योजना' : (language === 'hi' ? 'आवास योजना' : 'Housing Scheme')}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleVoiceQueryClick(language === 'mr' ? "पुढील ग्रामसभा कधी आहे?" : (language === 'hi' ? "अगली ग्राम सभा कब है?" : "When is next Gram Sabha?"))}
+              className="px-2 py-0.5 bg-white border border-red-200 text-red-800 rounded font-semibold text-[11px] hover:bg-amber-100 transition"
+            >
+              🎙️ {language === 'mr' ? 'ग्रामसभा बैठक' : (language === 'hi' ? 'ग्राम सभा' : 'Gram Sabha')}
+            </button>
+          </div>
         </div>
       )}
 
@@ -459,7 +504,7 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
             <span className="font-bold">{voiceFeedback || (language === 'mr' ? "ऐकत आहे... बोला" : "Listening... Speak now")}</span>
           </div>
           <button
-            onClick={toggleVoiceInput}
+            onClick={() => toggleVoiceInput()}
             className="text-[11px] bg-red-600 text-white font-bold px-2 py-0.5 rounded shadow"
           >
             {language === 'mr' ? 'थांबवा (Stop)' : 'Stop'}
@@ -477,21 +522,21 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
           <>
             <button
               type="button"
-              onClick={() => handleSendMessage("पुढील ग्रामसभा कधी आहे?")}
+              onClick={() => handleVoiceQueryClick("पुढील ग्रामसभा कधी आहे?")}
               className="shrink-0 bg-white hover:bg-amber-100 text-slate-800 px-2.5 py-0.5 rounded-full border border-amber-300 text-[11px] font-semibold transition"
             >
               🎙️ "पुढील ग्रामसभा कधी आहे?"
             </button>
             <button
               type="button"
-              onClick={() => handleSendMessage("घरकुल योजनेसाठी कोण पात्र आहे?")}
+              onClick={() => handleVoiceQueryClick("घरकुल योजनेसाठी कोण पात्र आहे?")}
               className="shrink-0 bg-white hover:bg-amber-100 text-slate-800 px-2.5 py-0.5 rounded-full border border-amber-300 text-[11px] font-semibold transition"
             >
               🎙️ "घरकुल योजनेसाठी कोण पात्र आहे?"
             </button>
             <button
               type="button"
-              onClick={() => handleSendMessage("पिण्याच्या पाण्याची तक्रार कशी नोंदवायची?")}
+              onClick={() => handleVoiceQueryClick("पिण्याच्या पाण्याची तक्रार कशी नोंदवायची?")}
               className="shrink-0 bg-white hover:bg-amber-100 text-slate-800 px-2.5 py-0.5 rounded-full border border-amber-300 text-[11px] font-semibold transition"
             >
               🎙️ "पिण्याच्या पाण्याची तक्रार कशी नोंदवायची?"
@@ -501,21 +546,21 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
           <>
             <button
               type="button"
-              onClick={() => handleSendMessage("अगली ग्रामसभा कब है?")}
+              onClick={() => handleVoiceQueryClick("अगली ग्रामसभा कब है?")}
               className="shrink-0 bg-white hover:bg-amber-100 text-slate-800 px-2.5 py-0.5 rounded-full border border-amber-300 text-[11px] font-semibold transition"
             >
               🎙️ "अगली ग्रामसभा कब है?"
             </button>
             <button
               type="button"
-              onClick={() => handleSendMessage("पीएम आवास योजना की पात्रता क्या है?")}
+              onClick={() => handleVoiceQueryClick("पीएम आवास योजना की पात्रता क्या है?")}
               className="shrink-0 bg-white hover:bg-amber-100 text-slate-800 px-2.5 py-0.5 rounded-full border border-amber-300 text-[11px] font-semibold transition"
             >
               🎙️ "पीएम आवास योजना की पात्रता क्या है?"
             </button>
             <button
               type="button"
-              onClick={() => handleSendMessage("पानी की शिकायत कैसे दर्ज करें?")}
+              onClick={() => handleVoiceQueryClick("पानी की शिकायत कैसे दर्ज करें?")}
               className="shrink-0 bg-white hover:bg-amber-100 text-slate-800 px-2.5 py-0.5 rounded-full border border-amber-300 text-[11px] font-semibold transition"
             >
               🎙️ "पानी की शिकायत कैसे दर्ज करें?"
@@ -525,21 +570,21 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
           <>
             <button
               type="button"
-              onClick={() => handleSendMessage("When is the next Gram Sabha meeting?")}
+              onClick={() => handleVoiceQueryClick("When is the next Gram Sabha meeting?")}
               className="shrink-0 bg-white hover:bg-amber-100 text-slate-800 px-2.5 py-0.5 rounded-full border border-amber-300 text-[11px] font-semibold transition"
             >
               🎙️ "When is next Gram Sabha?"
             </button>
             <button
               type="button"
-              onClick={() => handleSendMessage("Who is eligible for PMAY-G housing scheme?")}
+              onClick={() => handleVoiceQueryClick("Who is eligible for PMAY-G housing scheme?")}
               className="shrink-0 bg-white hover:bg-amber-100 text-slate-800 px-2.5 py-0.5 rounded-full border border-amber-300 text-[11px] font-semibold transition"
             >
               🎙️ "Who qualifies for PMAY-G house?"
             </button>
             <button
               type="button"
-              onClick={() => handleSendMessage("How do I lodge a drinking water complaint?")}
+              onClick={() => handleVoiceQueryClick("How do I lodge a drinking water complaint?")}
               className="shrink-0 bg-white hover:bg-amber-100 text-slate-800 px-2.5 py-0.5 rounded-full border border-amber-300 text-[11px] font-semibold transition"
             >
               🎙️ "How to file a water complaint?"
@@ -559,7 +604,7 @@ export const CitizenChat: React.FC<CitizenChatProps> = ({ onNavigateTab }) => {
         >
           <button
             type="button"
-            onClick={toggleVoiceInput}
+            onClick={() => toggleVoiceInput()}
             title={isListening ? "Stop listening" : t.chat.voiceInput}
             className={`p-2.5 rounded-lg border transition ${
               isListening
