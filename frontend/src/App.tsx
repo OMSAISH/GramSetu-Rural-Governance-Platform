@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { GovHeader } from './components/GovHeader';
@@ -238,6 +239,7 @@ export const App: React.FC = () => {
     <AuthProvider>
       <LanguageProvider>
         <MainAppContent />
+        <Analytics />
       </LanguageProvider>
     </AuthProvider>
   );
