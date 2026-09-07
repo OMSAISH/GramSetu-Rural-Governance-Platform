@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { api } from '../services/api';
 import { 
   AlertCircle, Search, CheckCircle2, ShieldAlert, Copy, 
-  Check, Send, Sparkles, Landmark
+  Check, Send, Sparkles, Landmark, Mic, MicOff
 } from 'lucide-react';
 
 interface GrievancePortalProps {
@@ -20,6 +20,106 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedData, setSubmittedData] = useState<any | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Voice speech recognition state
+  const [isListening, setIsListening] = useState(false);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+  const recognitionRef = useRef<any>(null);
+
+  const toggleVoiceInput = () => {
+    setVoiceError(null);
+
+    if (isListening) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {
+          // ignore
+        }
+      }
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      setVoiceError(
+        language === 'mr'
+          ? 'तुमचा ब्राऊझर व्हॉईस इनपुटला सपोर्ट करत नाही. कृपया Google Chrome किंवा Microsoft Edge वापरा.'
+          : language === 'hi'
+          ? 'आपका ब्राउज़र वॉयस इनपुट का समर्थन नहीं करता है। कृपया Google Chrome या Edge का उपयोग करें।'
+          : 'Voice input is not supported on this browser. Please use Google Chrome or Microsoft Edge.'
+      );
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognitionRef.current = recognition;
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = language === 'mr' ? 'mr-IN' : language === 'hi' ? 'hi-IN' : 'en-IN';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        setVoiceError(null);
+      };
+
+      recognition.onresult = (event: any) => {
+        let finalChunk = '';
+        let interimChunk = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalChunk += event.results[i][0].transcript;
+          } else {
+            interimChunk += event.results[i][0].transcript;
+          }
+        }
+
+        const chunk = finalChunk || interimChunk;
+        if (chunk) {
+          setDescription((prev) => {
+            const trimmed = prev.trim();
+            return trimmed ? `${trimmed} ${chunk}` : chunk;
+          });
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        setIsListening(false);
+        if (event.error === 'not-allowed') {
+          setVoiceError(
+            language === 'mr'
+              ? 'मायक्रोफोन परवानगी नाकारली आहे. कृपया ॲड्रेस बारमधील कुलूप (Lock) आयकॉनवर क्लिक करून Microphone ला "Allow" करा.'
+              : language === 'hi'
+              ? 'माइक्रोफ़ोन अनुमति अस्वीकृत। कृपया एड्रेस बार में लॉक आइकन पर क्लिक करके Microphone को "Allow" करें।'
+              : 'Microphone permission blocked. Please click the Lock icon in your browser address bar and set Microphone to "Allow".'
+          );
+        } else if (event.error === 'no-speech') {
+          setVoiceError(
+            language === 'mr'
+              ? 'आवाज ऐकू आला नाही. कृपया पुन्हा माइक बटण दाबून स्पष्ट बोला.'
+              : 'No speech detected. Please press the mic button again and speak clearly.'
+          );
+        } else if (event.error !== 'aborted') {
+          setVoiceError(`Voice recognition: ${event.error}`);
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+        recognitionRef.current = null;
+      };
+
+      recognition.start();
+    } catch (err: any) {
+      setIsListening(false);
+      setVoiceError(err.message || 'Could not start voice recognition');
+    }
+  };
 
   // Live category prediction
   const [predictedCategory, setPredictedCategory] = useState<string>('other');
@@ -217,17 +317,81 @@ export const GrievancePortal: React.FC<GrievancePortalProps> = ({ initialTrackin
           ) : (
             <form onSubmit={handleSubmitGrievance} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1.5 uppercase">
-                  {t.grievance.descLabel} <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  rows={4}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder={t.grievance.descPlaceholder}
-                  className="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm focus:bg-white focus:ring-2 focus:ring-[#0A2540]/20 focus:border-[#0A2540] outline-none font-medium leading-relaxed"
-                  required
-                />
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-bold text-slate-800 uppercase">
+                    {t.grievance.descLabel} <span className="text-red-500">*</span>
+                  </label>
+                  
+                  {/* Voice Button */}
+                  <button
+                    type="button"
+                    onClick={toggleVoiceInput}
+                    className={`flex items-center space-x-1.5 text-xs px-3 py-1 rounded-full font-bold transition-all shadow-sm ${
+                      isListening
+                        ? 'bg-red-600 text-white animate-pulse ring-2 ring-red-400'
+                        : 'bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300'
+                    }`}
+                    title="बोलून तक्रार नोंदवा (Speak Grievance)"
+                  >
+                    {isListening ? (
+                      <>
+                        <span className="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                        <MicOff className="w-3.5 h-3.5" />
+                        <span>थांबवा (Listening...)</span>
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="w-3.5 h-3.5 text-amber-700" />
+                        <span>बोलून नोंदवा (Speak)</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {voiceError && (
+                  <div className="mb-2 p-2.5 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs flex items-center justify-between">
+                    <span>{voiceError}</span>
+                    <button type="button" onClick={() => setVoiceError(null)} className="ml-2 text-red-500 hover:text-red-800 font-bold">✕</button>
+                  </div>
+                )}
+
+                <div className="relative">
+                  <textarea
+                    rows={4}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder={t.grievance.descPlaceholder}
+                    className={`w-full p-3.5 bg-slate-50 border rounded-xl text-xs sm:text-sm focus:bg-white focus:ring-2 focus:ring-[#0A2540]/20 focus:border-[#0A2540] outline-none font-medium leading-relaxed ${
+                      isListening ? 'border-red-400 ring-2 ring-red-100' : 'border-slate-300'
+                    }`}
+                    required
+                  />
+                  {isListening && (
+                    <div className="absolute bottom-2.5 right-3 flex items-center space-x-1.5 px-2 py-1 bg-red-50 border border-red-200 rounded-md text-[11px] text-red-700 font-semibold shadow-xs">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-ping"></span>
+                      <span>मायक्रोफोन चालू आहे... (Listening)</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Quick 1-Click Presentation Demos */}
+                <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
+                  <span className="text-slate-500 font-semibold">उदा. (Examples):</span>
+                  {[
+                    { label: '💧 पाणी गळती', text: language === 'mr' ? 'आमच्या गल्लीतील पाण्याची मुख्य पाईपलाईन फुटली असून २ दिवसांपासून पाणी वाया जात आहे.' : 'Water pipeline leakage on main street since 2 days.' },
+                    { label: '💡 पथदिवे बंद', text: language === 'mr' ? 'गावच्या मंदिराजवळील पथदिवे गेल्या आठवड्यापासून बंद आहेत, रात्री अंधार असतो.' : 'Street lights near village temple are not working for a week.' },
+                    { label: '🛣️ रस्त्यावरील खड्डे', text: language === 'mr' ? 'शाळेसमोरील मुख्य डांबरी रस्त्यावर मोठे खड्डे पडले असून अपघात होत आहेत.' : 'Large potholes on the main road in front of school.' },
+                  ].map((demo, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setDescription(demo.text)}
+                      className="px-2 py-0.5 bg-slate-100 hover:bg-amber-100 text-slate-700 hover:text-amber-900 border border-slate-200 rounded-md transition text-[11px]"
+                    >
+                      {demo.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Dynamic Auto-Detection & SLA Guarantee Card */}
