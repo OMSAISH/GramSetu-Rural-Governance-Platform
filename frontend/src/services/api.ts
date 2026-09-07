@@ -740,8 +740,10 @@ export const api = {
       const g = currentList.find((item: any) => item.tracking_id.toUpperCase() === tid);
       if (g) {
         const reply = language === 'mr'
-          ? `तक्रार आयडी ${g.tracking_id} ची सद्यस्थिती: **${g.status.toUpperCase()}**. विभाग: ${g.department_assigned}. मुदत: ${new Date(g.sla_deadline).toLocaleDateString()}.`
-          : `Grievance ID ${g.tracking_id} Status: **${g.status.toUpperCase()}**. Department: ${g.department_assigned}. SLA Target: ${new Date(g.sla_deadline).toLocaleDateString()}.`;
+          ? `तक्रार आयडी ${g.tracking_id} ची सद्यस्थिती: **${g.status.toUpperCase()}** आहे.\n• विभाग: ${g.department_assigned}\n• निवारण हमी मुदत: ${new Date(g.sla_deadline).toLocaleDateString()}`
+          : language === 'hi'
+          ? `शिकायत आईडी ${g.tracking_id} का आधिकारिक विवरण:\n• स्थिति: **${g.status.toUpperCase()}**\n• विभाग: ${g.department_assigned}\n• समाधान समयसीमा: ${new Date(g.sla_deadline).toLocaleDateString()}`
+          : `Grievance ID ${g.tracking_id} Status: **${g.status.toUpperCase()}**.\n• Department: ${g.department_assigned}\n• SLA Target: ${new Date(g.sla_deadline).toLocaleDateString()}`;
         return {
           reply,
           language,
@@ -749,16 +751,72 @@ export const api = {
           suggested_actions: ['Track Another ID', 'Check Scheme Eligibility', 'Panchayat Works'],
           metadata: { tracking_id: g.tracking_id }
         };
+      } else {
+        const reply = language === 'mr'
+          ? `ट्रॅकिंग आयडी **${tid}** रेकॉर्डमध्ये सापडला नाही. ❌\nकृपया आपला अचूक आयडी तपासा किंवा नवीन तक्रार नोंदवा.`
+          : language === 'hi'
+          ? `ट्रैकिंग आईडी **${tid}** सिस्टम में नहीं मिला। ❌\nकृपया सही ट्रैकिंग आईडी जांचें या नई शिकायत दर्ज करें।`
+          : `Tracking ID **${tid}** was not found. ❌\nPlease verify the ID or register a new grievance.`;
+        return {
+          reply,
+          language,
+          intent_detected: 'grievance',
+          suggested_actions: ['File New Grievance', 'Check Scheme Eligibility'],
+          metadata: { tracking_id: tid }
+        };
       }
     }
 
-    // Scheme check intent
-    if (text.includes('scheme') || text.includes('योजना') || text.includes('पात्रता') || text.includes('eligib') || text.includes('pension') || text.includes('awas')) {
+    // Specific Scheme check intent
+    if (text.includes('awas') || text.includes('housing') || text.includes('pmay') || text.includes('घरकुल') || text.includes('मकान') || text.includes('आवास')) {
       const reply = language === 'mr'
-        ? "ग्रामसेतू ५ प्रमुख शासकीय कल्याणकारी योजनांसाठी (घरकुल, वृद्धावस्था पेन्शन, विधवा पेन्शन, मनरेगा व शिष्यवृत्ती) पात्रता तपासतो. तुमचे वय, उत्पन्न व प्रवर्ग टाकून पात्रता तपासा आणि थेट अर्ज डाउनलोड करा."
-        : (language === 'hi' 
-          ? "ग्रामसेतु 5 प्रमुख सरकारी कल्याणकारी योजनाओं (पीएम आवास, वृद्धावस्था पेंशन, विधवा पेंशन, मनरेगा व छात्रवृत्ति) के लिए पात्रता जांचता है। अपनी पात्रता जांचें और फॉर्म डाउनलोड करें।"
-          : "GramSetu verifies eligibility across 5 key welfare schemes (PMAY-G, Old Age Pension, Widow Pension, MGNREGA, and Scholarships). Complete your profile to download pre-filled applications.");
+        ? "🏡 **प्रधानमंत्री आवास योजना - ग्रामीण (PMAY-G / घरकुल)**:\n• **अनुदान**: पक्के घर बांधण्यासाठी ₹१,२०,००० थेट बँक खात्यात + मनरेगा मजुरी (₹२८,०००) + स्वच्छ भारत शौचालय (₹१२,०००).\n• **पात्रता**: कच्च्या घरात राहणारे किंवा SECC 2011 प्रतीक्षा यादीतील लाभार्थी.\n• **कागदपत्रे**: आधार कार्ड, बँक खाते, ७/१२ किंवा नमुना ८, जॉब कार्ड.\n💡 'पात्रता तपासा' टॅबमधून पूर्व-भरलेला अर्ज त्वरित डाउनलोड करा."
+        : language === 'hi'
+        ? "🏡 **प्रधानमंत्री आवास योजना - ग्रामीण (PMAY-G / पक्का मकान)**:\n• **अनुदान**: पक्के मकान निर्माण हेतु ₹1,20,000 की सीधी सहायता + मनरेगा 90 दिन मजदूरी + शौचालय अनुदान (₹12,000)।\n• **पात्रता**: कच्चे मकान या बेघर ग्रामीण परिवार (SECC 2011 सूची)।\n• **दस्तावेज**: आधार कार्ड, बैंक पासबुक, जमीन रिकॉर्ड, जॉब कार्ड।\n💡 'पात्रता' पोर्टल से पहले से भरा हुआ फॉर्म सीधे डाउनलोड करें।"
+        : "🏡 **Pradhan Mantri Awas Yojana - Gramin (PMAY-G)**:\n• **Grant**: ₹1,20,000 direct bank grant + 90 days MGNREGA wages (~₹28,000) + Swachh Bharat toilet grant (₹12,000).\n• **Eligibility**: Rural houseless or kutcha-house families in SECC list.\n• **Documents**: Aadhaar card, bank account, land 7/12 record, Job card.\n💡 Download your pre-filled application form in the Scheme Eligibility tab.";
+      return {
+        reply,
+        language,
+        intent_detected: 'scheme_check',
+        suggested_actions: ['Check Full Eligibility', 'Download Application Form', 'Panchayat Works']
+      };
+    }
+
+    if (text.includes('kisan') || text.includes('farmer') || text.includes('शेतक') || text.includes('किसान') || text.includes('सम्मान') || text.includes('पीक') || text.includes('विमा') || text.includes('कृषी')) {
+      const reply = language === 'mr'
+        ? "🌾 **शेतकऱ्यांसाठी प्रमुख योजना (PM किसान + नमो शेतकरी महासन्मान)**:\n• **PM किसान सन्मान निधी**: वर्षाला ₹६,००० (३ हप्ते) थेट बँक खात्यात जमा.\n• **नमो शेतकरी योजना (महाराष्ट्र)**: राज्य सरकारकडून अतिरिक्त ₹६,००० (एकूण ₹१२,००० प्रतिवर्ष!).\n• **₹१ रुपयात पीक विमा योजना**: अवकाळी पाऊस व दुष्काळात पिकांचे नुकसान झाल्यास संपूर्ण विमा संरक्षण.\n• **अटी**: शेतीचा ७/१२ व ८-अ, आधार लिंक बँक खाते आणि e-KYC पूर्ण असणे आवश्यक."
+        : language === 'hi'
+        ? "🌾 **किसानों के लिए प्रमुख योजनाएं (पीएम किसान + फसल बीमा)**:\n• **पीएम किसान सम्मान निधि**: प्रतिवर्ष ₹6,000 (3 किस्तें) सीधे बैंक खाते में।\n• **नमो शेतकरी महासम्मान (महाराष्ट्र)**: अतिरिक्त ₹6,000 वार्षिक (कुल ₹12,000 प्रतिवर्ष)।\n• **₹1 में फसल बीमा योजना**: सूखा या बेमौसम बारिश से नुकसान पर पूर्ण मुआवजा।\n• **शर्तें**: आधार लिंक सक्रिय बैंक खाता, जमीन खतौनी/7-12 और पूर्ण e-KYC।"
+        : "🌾 **Top Welfare Schemes for Farmers (PM-KISAN & Crop Insurance)**:\n• **PM Kisan Samman Nidhi**: ₹6,000/year directly to bank accounts.\n• **Namo Shetkari Mahasanman (Maharashtra)**: Additional ₹6,000/year (Total ₹12,000 annually).\n• **₹1 Crop Insurance (PMFBY)**: Full indemnity against crop damage at token ₹1 premium.\n• **Requirements**: 7/12 land ledger record, Aadhaar bank seeding, and e-KYC.";
+      return {
+        reply,
+        language,
+        intent_detected: 'scheme_check',
+        suggested_actions: ['Check Full Eligibility', 'Download Application Form', 'File Grievance']
+      };
+    }
+
+    if (text.includes('pension') || text.includes('पेन्शन') || text.includes('पेंशन') || text.includes('वृद्ध') || text.includes('विधवा')) {
+      const reply = language === 'mr'
+        ? "👵 **सामाजिक सुरक्षा पेन्शन योजना**:\n• **इंदिरा गांधी राष्ट्रीय वृद्धावस्था पेन्शन**: ६० वर्षांवरील बीपीएल ज्येष्ठांना दरमहा ₹१,५००.\n• **इंदिरा गांधी राष्ट्रीय विधवा पेन्शन**: बीपीएल विधवा महिलांना दरमहा ₹१,५०० आर्थिक मदत.\n• **दिव्यांग पेन्शन**: ४०% पेक्षा जास्त अपंगत्व असणाऱ्या व्यक्तींना मासिक सहाय्य.\n• **कागदपत्रे**: वयाचा दाखला, बीपीएल रेशन कार्ड, उत्पन्नाचा दाखला."
+        : language === 'hi'
+        ? "👵 **राष्ट्रीय सामाजिक सहायता एवं पेंशन योजनाएं**:\n• **वृद्धावस्था पेंशन**: 60 वर्ष या अधिक के बीपीएल वरिष्ठ नागरिकों को ₹1,500 प्रति माह।\n• **विधवा पेंशन**: बीपीएल विधवा महिलाओं को ₹1,500 प्रति माह आर्थिक सहायता।\n• **दिव्यांग पेंशन**: 40% से अधिक दिव्यांगता वाले नागरिकों को मासिक वित्तीय सहायता।\n• **दस्तावेज**: आयु प्रमाण पत्र, बीपीएल राशन कार्ड, आय प्रमाण पत्र।"
+        : "👵 **National Social Assistance & Pension Schemes**:\n• **Old Age Pension (IGNOAPS)**: ₹1,500/month for BPL senior citizens aged 60+.\n• **Widow Pension (IGNWPS)**: ₹1,500/month for BPL destitute widows.\n• **Divyang Pension**: Monthly financial allowance for >40% disability.\n• **Documents**: Age proof, BPL Ration Card, Tehsildar Income Certificate.";
+      return {
+        reply,
+        language,
+        intent_detected: 'scheme_check',
+        suggested_actions: ['Check Full Eligibility', 'Download Application Form', 'Panchayat Works']
+      };
+    }
+
+    // General scheme intent
+    if (text.includes('scheme') || text.includes('योजना') || text.includes('पात्रता') || text.includes('eligib') || text.includes('अर्ज') || text.includes('form') || text.includes('अनुदान')) {
+      const reply = language === 'mr'
+        ? "ग्रामसेतू ५ प्रमुख शासकीय योजनांसाठी स्वयंचलित पात्रता तपासतो:\n• **प्रधानमंत्री आवास योजना (घरकुल)**\n• **इंदिरा गांधी वृद्धावस्था पेन्शन योजना**\n• **इंदिरा गांधी विधवा पेन्शन योजना**\n• **महात्मा गांधी ग्रामीण रोजगार हमी योजना (मनरेगा)**\n• **पोस्ट-मॅट्रिक शिष्यवृत्ती योजना**\n\n'पात्रता तपासा' टॅबमध्ये तुमचे वय व उत्पन्न टाकून थेट अधिकृत अर्ज डाउनलोड करा."
+        : language === 'hi'
+        ? "ग्रामसेतु 5 प्रमुख सरकारी योजनाओं के लिए पात्रता जांचता है:\n• **प्रधानमंत्री आवास योजना (पक्का मकान)**\n• **इंदिरा गांधी वृद्धावस्था पेंशन योजना**\n• **इंदिरा गांधी विधवा पेंशन योजना**\n• **महात्मा गांधी ग्रामीण रोजगार गारंटी (मनरेगा)**\n• **पोस्ट-मैट्रिक छात्रवृत्ति योजना**\n\n'पात्रता' टैब में जाकर तुरंत अपने नाम का आधिकारिक आवेदन फॉर्म डाउनलोड करें।"
+        : "GramSetu verifies eligibility across 5 key welfare schemes:\n• **Pradhan Mantri Awas Yojana - Gramin (PMAY-G)**\n• **Indira Gandhi Old Age Pension (IGNOAPS)**\n• **Indira Gandhi Widow Pension (IGNWPS)**\n• **MGNREGA 100-Day Guaranteed Wage Employment**\n• **Post-Matric Student Scholarship**\n\nVisit the Scheme Eligibility tab to download your pre-filled application PDF.";
       return {
         reply,
         language,
@@ -768,11 +826,13 @@ export const api = {
     }
 
     // Grievance filing intent
-    if (text.includes('water') || text.includes('pipe') || text.includes('light') || text.includes('road') || text.includes('खड्डा') || text.includes('पाणी') || text.includes('वीज') || text.includes('तक्रार') || text.includes('complain') || text.includes('broken')) {
+    if (text.includes('water') || text.includes('pipe') || text.includes('light') || text.includes('road') || text.includes('खड्डा') || text.includes('खड्डे') || text.includes('पाणी') || text.includes('वीज') || text.includes('लाईट') || text.includes('तक्रार') || text.includes('शिकायत') || text.includes('complain') || text.includes('broken') || text.includes('leak') || text.includes('गळती') || text.includes('फुटली') || text.includes('कचरा') || text.includes('गटार') || text.includes('अंधार') || text.includes('दुर्गंधी')) {
       const gRes = await api.submitGrievance({ description: message, language });
       const reply = language === 'mr'
-        ? `तुमची तक्रार अधिकृतपणे नोंदवली गेली आहे! ✅\n\n• **ट्रॅकिंग आयडी**: \`${gRes.tracking_id}\`\n• **संबंधित विभाग**: ${gRes.department_assigned}\n• **निवारण मुदत (SLA)**: ${new Date(gRes.sla_deadline).toLocaleDateString()}\n\nतुम्ही हा आयडी वापरून कधीही प्रगती तपासू शकता.`
-        : `Your grievance has been officially registered! ✅\n\n• **Tracking ID**: \`${gRes.tracking_id}\`\n• **Department**: ${gRes.department_assigned}\n• **SLA Resolution Deadline**: ${new Date(gRes.sla_deadline).toLocaleDateString()}\n\nYou can track the live status anytime using this ID.`;
+        ? `आपली तक्रार अधिकृतपणे नोंदवून संबंधित विभागाकडे वर्ग करण्यात आली आहे! ✅\n\n• **ट्रॅकिंग आयडी**: \`${gRes.tracking_id}\`\n• **नियुक्त विभाग**: ${gRes.department_assigned}\n• **SLA हमी मुदत**: **${new Date(gRes.sla_deadline).toLocaleDateString()}**\n\nमुदतीत निवारण न झाल्यास ही तक्रार स्वयंचलितपणे गट विकास अधिकारी (BDO) यांच्याकडे वर्ग होईल. आपण हा आयडी वापरून कधीही प्रगती तपासू शकता.`
+        : language === 'hi'
+        ? `आपकी शिकायत अधिकृत रूप से दर्ज कर ली गई है! ✅\n\n• **ट्रैकिंग आईडी**: \`${gRes.tracking_id}\`\n• **नियुक्त विभाग**: ${gRes.department_assigned}\n• **SLA समाधान अंतिम तिथि**: **${new Date(gRes.sla_deadline).toLocaleDateString()}**\n\nयदि निर्धारित समय में समाधान नहीं हुआ, तो यह शिकायत स्वतः ब्लॉक विकास अधिकारी (BDO) को अग्रेषित हो जाएगी।`
+        : `Your grievance has been officially registered and assigned! ✅\n\n• **Tracking ID**: \`${gRes.tracking_id}\`\n• **Assigned Department**: ${gRes.department_assigned}\n• **SLA Resolution Deadline**: **${new Date(gRes.sla_deadline).toLocaleDateString()}**\n\nAutomatic SLA escalation to the Block Development Officer (BDO) is active for this ticket.`;
       return {
         reply,
         language,
@@ -783,10 +843,12 @@ export const api = {
     }
 
     // Governance records intent
-    if (text.includes('meeting') || text.includes('सभा') || text.includes('बैठक') || text.includes('काम') || text.includes('work') || text.includes('fund') || text.includes('निधी')) {
+    if (text.includes('meeting') || text.includes('सभा') || text.includes('बैठक') || text.includes('काम') || text.includes('कामे') || text.includes('work') || text.includes('fund') || text.includes('निधी') || text.includes('बजेट') || text.includes('सरपंच') || text.includes('sarpanch')) {
       const reply = language === 'mr'
-        ? "ग्रामपंचायतीचे नवीनतम अपडेट्स:\n• **विशेष ग्रामसभा बैठक** (५ दिवसांनी आगामी) - जलजीवन मिशन नळ जोडणी मंजुरी\n• **सिमेंट रस्ता व गटार बांधकाम** (वॉर्ड क्र. २ ते शाळा) - ६५% काम पूर्ण (निधी: ₹४.८ लाख)\n• **२४ सौर पथदिवे बसविणे** - काम सुरू आहे."
-        : "Latest Gram Panchayat Updates:\n• **Special Gram Sabha Meeting** (Upcoming in 5 days) - Jal Jeevan Mission approvals\n• **Concrete Road & Drain Construction** (Ward 2 to School) - 65% Completed (Fund: ₹4.8 Lakh)\n• **24 Solar Streetlights** - Installation in progress.";
+        ? "🏛️ **ग्रामपंचायतीचे अधिकृत अपडेट्स (कोपरगाव ग्रामीण)**:\n• **विशेष ग्रामसभा बैठक**: आगामी १५ तारीख, स. १०:३० वा. (विषय: जलजीवन मिशन नळ जोडणी मंजुरी)\n• **सिमेंट रस्ता व गटार बांधकाम**: वॉर्ड क्र. २ ते शाळा - ६५% पूर्ण (निधी: ₹४.८ लाख)\n• **२४ सौर पथदिवे बसविणे**: काम प्रगतीपथावर (निधी: ₹२.१ लाख)\n• **प्रशासन**: सरपंच: सौ. सुनीता पाटील | ग्रामसेवक: श्री आर. के. शिंदे"
+        : language === 'hi'
+        ? "🏛️ **ग्राम पंचायत आधिकारिक अपडेट (कोपरगांव ग्रामीण)**:\n• **विशेष ग्राम सभा बैठक**: आगामी 15 तारीख, प्रातः 10:30 बजे (विषय: जल जीवन मिशन नल कनेक्शन)\n• **सीमेंट सड़क व नाली निर्माण**: वार्ड 2 से विद्यालय - 65% पूर्ण (बजट: ₹4.8 लाख)\n• **24 सोलर स्ट्रीट लाइट स्थापना**: कार्य प्रगति पर (बजट: ₹2.1 लाख)\n• **प्रशासन**: सरपंच: सौ. सुनीता पाटील | ग्राम सेवक: श्री आर. के. शिंदे"
+        : "🏛️ **Gram Panchayat Official Updates (Kopargaon Rural)**:\n• **Special Gram Sabha Meeting**: 15th of month at 10:30 AM (Jal Jeevan Mission approvals)\n• **Concrete Road & Drain Works**: Ward 2 to School - 65% Completed (Budget: ₹4.8 Lakh)\n• **24 Solar Streetlights**: Installation in progress (Budget: ₹2.1 Lakh)\n• **Administration**: Sarpanch: Mrs. Sunita Patil | Gram Sevak: Mr. R. K. Shinde";
       return {
         reply,
         language,
@@ -795,15 +857,21 @@ export const api = {
       };
     }
 
-    // General fallback
+    // General greeting & fallback
     const welcome = language === 'mr'
-      ? "नमस्ते! मी ग्रामसेतू आहे, तुमचा ग्रामपंचायत डिजिटल सहाय्यक. मी तुम्हाला शासकीय योजना, ग्रामसभा बैठका आणि गावांमधील समस्यांच्या तक्रार नोंदणीसाठी मदत करू शकतो."
-      : "Namaste! I am GramSetu, your Gram Panchayat digital assistant. I can help you check welfare scheme eligibility, track local civic complaints, and explore Gram Sabha updates.";
+      ? "नमस्ते! मी **ग्रामसेतू (GramSetu)** आहे, तुमचा ग्रामपंचायत डिजिटल सहाय्यक. 🙏\n\nमी तुम्हाला शासकीय योजनांची पात्रता तपासणे, पाणी/वीज/रस्त्यांची तक्रार नोंदवणे आणि आगामी ग्रामसभा बैठकांची माहिती मिळवण्यासाठी मदत करू शकतो. तुम्हाला काय माहिती हवी आहे?"
+      : language === 'hi'
+      ? "नमस्ते! मैं **ग्रामसेतु (GramSetu)** हूँ, आपका ग्राम पंचायत डिजिटल सहायक। 🙏\n\nमैं सरकारी योजनाओं की पात्रता जांचने, पानी/सड़क/बिजली की शिकायत दर्ज करने और ग्राम सभा बैठकों की जानकारी देने में आपकी सहायता कर सकता हूँ। आप क्या जानना चाहते हैं?"
+      : "Namaste! I am **GramSetu**, your 24/7 Gram Panchayat digital governance assistant. 🙏\n\nI can help you check welfare scheme eligibility, register civic complaints, or check Gram Sabha meeting agendas and village public works. How can I help you today?";
     return {
       reply: welcome,
       language,
       intent_detected: 'general',
-      suggested_actions: ['Check Scheme Eligibility', 'Report Water Leak', 'Upcoming Gram Sabha Meeting']
+      suggested_actions: [
+        language === 'mr' ? 'योजना पात्रता तपासा' : (language === 'hi' ? 'योजना पात्रता जांचें' : 'Check Scheme Eligibility'),
+        language === 'mr' ? 'पाणी पुरवठ्याची तक्रार' : (language === 'hi' ? 'पानी की समस्या' : 'Report Water Leak'),
+        language === 'mr' ? 'आगामी ग्रामसभा बैठक' : (language === 'hi' ? 'आगामी ग्राम सभा' : 'Upcoming Gram Sabha Meeting')
+      ]
     };
   },
 

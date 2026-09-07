@@ -28,24 +28,24 @@ CATEGORY_DEPARTMENTS = {
 # Multilingual keywords for grievance classification
 KEYWORD_RULES = {
     "water": [
-        r"\bwater\b", r"\bpipeline\b", r"\bpipe\b", r"\btap\b", r"\bborewell\b", r"\bdrinking\b",
-        r"पानी", r"नल", r"जल", r"पाइप", r"बोरवेल", r"सप्लाई",
-        r"पाणी", r"नळ", r"विहीर", r"पाईप", r"गळती", r"पुरवठा"
+        r"\bwater\b", r"\bpipeline\b", r"\bpipe\b", r"\btap\b", r"\bborewell\b", r"\bdrinking\b", r"\bleak\w*\b",
+        r"पानी", r"नल", r"जल", r"पाइप", r"पाइपलाइन", r"बोरवेल", r"सप्लाई", r"लीकेज", r"फूटी", r"टैंकर",
+        r"पाणी", r"नळ", r"विहीर", r"पाईप", r"पाईपलाईन", r"गळती", r"पुरवठा", r"फुटली", r"फुटला", r"टँकर"
     ],
     "electricity": [
-        r"\belectricity\b", r"\blight\b", r"\bstreet\s*light\b", r"\bpower\b", r"\btransformer\b", r"\bpole\b",
-        r"बिजली", r"लाइट", r"स्ट्रीट लाइट", r"खंभा", r"ट्रांसफार्मर", r"अंधेरा",
-        r"वीज", r"लाईट", r"पथदिवे", r"खांब", r"ट्रान्सफॉर्मर", r"अंधार"
+        r"\belectricity\b", r"\blight\b", r"\bstreet\s*light\b", r"\bpower\b", r"\btransformer\b", r"\bpole\b", r"\bdark\b",
+        r"बिजली", r"लाइट", r"स्ट्रीट लाइट", r"खंभा", r"ट्रांसफार्मर", r"अंधेरा", r"खराब", r"बिजली गुल",
+        r"वीज", r"लाईट", r"पथदिवे", r"खांब", r"ट्रान्सफॉर्मर", r"अंधार", r"बंद आहे", r"नादुरुस्त"
     ],
     "sanitation": [
-        r"\bsanitation\b", r"\bgarbage\b", r"\bwaste\b", r"\bdrain\b", r"\bgutter\b", r"\bcleaning\b", r"\btrash\b",
-        r"कचरा", r"गंदगी", r"सफाई", r"नाली", r"गटर", r"स्वच्छता",
-        r"कचरा", r"घाण", r"स्वच्छता", r"गटार", r"नाले", r"सफाई"
+        r"\bsanitation\b", r"\bgarbage\b", r"\bwaste\b", r"\bdrain\b", r"\bgutter\b", r"\bcleaning\b", r"\btrash\b", r"\bsewage\b",
+        r"कचरा", r"गंदगी", r"सफाई", r"नाली", r"गटर", r"स्वच्छता", r"बदबू", r"शौचालय",
+        r"कचरा", r"घाण", r"स्वच्छता", r"गटार", r"नाले", r"सफाई", r"दुर्गंधी", r"शौचालय"
     ],
     "road": [
         r"\broad\b", r"\bpothole\b", r"\bpavement\b", r"\bbridge\b", r"\bhighway\b", r"\bfootpath\b",
-        r"सड़क", r"गड्ढा", r"रास्ता", r"मरम्मत", r"पुल",
-        r"रस्ता", r"खड्डा", r"खड्डे", r"मार्ग", r"दुरुस्ती", r"पूल"
+        r"सड़क", r"गड्ढा", r"रास्ता", r"मरम्मत", r"पुल", r"टूटी सड़क",
+        r"रस्ता", r"खड्डा", r"खड्डे", r"मार्ग", r"दुरुस्ती", r"पूल", r"डांबरीकरण"
     ],
     "pension": [
         r"\bpension\b", r"\bold age\b", r"\bwidow\b", r"\bdisbursement\b", r"\binstallment\b",
